@@ -8,6 +8,9 @@ import { PendingApprovalPage, BlockedAccountPage } from '@/features/auth/StatusP
 import { RequireAuth, RequireRole, RequireSession, RootRedirect } from './guards'
 import { AdminDashboardPage } from '@/features/dashboard/AdminDashboardPage'
 import { ClientDashboardPage } from '@/features/dashboard/ClientDashboardPage'
+import { ClientsPage } from '@/features/clients/ClientsPage'
+import { ClientDetailPage } from '@/features/clients/ClientDetailPage'
+import { ApprovalsPage } from '@/features/clients/ApprovalsPage'
 import { ComingSoonPage, NotFoundPage } from '@/pages/PlaceholderPages'
 import { CheckInPage } from '@/pages/CheckInPage'
 
@@ -29,14 +32,9 @@ export function AppRoutes() {
         <Route element={<RequireRole role="admin" />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboardPage />} />
-            <Route
-              path="clients"
-              element={<ComingSoonPage title="Clients" phase="Phase 2" />}
-            />
-            <Route
-              path="approvals"
-              element={<ComingSoonPage title="Approvals" phase="Phase 2" />}
-            />
+            <Route path="clients" element={<ClientsPage />} />
+            <Route path="clients/:clientId" element={<ClientDetailPage />} />
+            <Route path="approvals" element={<ApprovalsPage />} />
             <Route
               path="plans"
               element={<ComingSoonPage title="Membership Plans" phase="Phase 3" />}

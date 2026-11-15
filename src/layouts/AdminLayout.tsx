@@ -9,6 +9,8 @@ import {
   Users,
   UserCheck,
 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { PortalLayout, type NavItem } from './PortalLayout'
 
@@ -28,9 +30,25 @@ export function AdminLayout() {
   const { profile, clientDetail } = useAuth()
   const name = clientDetail?.display_name ?? 'Administrator'
 
+  const pendingQuery = useQuery({
+    queryKey: ['pending-count'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('pending_approval_count')
+      if (error) throw error
+      return data ?? 0
+    },
+    refetchInterval: 60_000,
+  })
+
+  const nav = adminNav.map((item) =>
+    item.to === '/admin/approvals'
+      ? { ...item, badge: pendingQuery.data ?? 0 }
+      : item,
+  )
+
   return (
     <PortalLayout
-      nav={adminNav}
+      nav={nav}
       portalLabel="Admin"
       identityName={name}
       identityMeta={profile?.email ?? ''}

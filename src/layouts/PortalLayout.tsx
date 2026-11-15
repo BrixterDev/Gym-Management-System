@@ -12,6 +12,7 @@ export interface NavItem {
   label: string
   icon: LucideIcon
   end?: boolean
+  badge?: number
 }
 
 interface PortalLayoutProps {
@@ -200,7 +201,12 @@ function SidebarLink({ item }: { item: NavItem }) {
       }
     >
       <item.icon className="size-4.5 shrink-0" aria-hidden />
-      {item.label}
+      <span className="flex-1">{item.label}</span>
+      {item.badge ? (
+        <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+          {item.badge > 99 ? '99+' : item.badge}
+        </span>
+      ) : null}
     </NavLink>
   )
 }

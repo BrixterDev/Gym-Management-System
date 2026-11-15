@@ -11,8 +11,8 @@ A secure, responsive gym management application for gym owners and members.
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 1 | Architecture, migrations, RLS, `gym_settings`, authentication | ✅ Complete |
-| 2 | Client management, `client_details`, approvals, account status | ⏳ Next |
-| 3 | Plans, subscriptions lifecycle, payments | ⏳ |
+| 2 | Client management, `client_details`, approvals, account status | ✅ Complete |
+| 3 | Plans, subscriptions lifecycle, payments | ⏳ Next |
 | 4 | Attendance, QR codes, check-in/out, admin corrections | ⏳ |
 | 5 | Body metrics, self-entry, progress charts | ⏳ |
 | 6 | Analytics, reports, CSV export | ⏳ |
@@ -44,9 +44,21 @@ Open **Supabase Dashboard → SQL Editor** and run these files **in order**:
 1. `supabase/migrations/0001_init.sql` — tables, constraints, indexes, triggers
 2. `supabase/migrations/0002_functions.sql` — role helpers, auth triggers, guards
 3. `supabase/migrations/0003_rls.sql` — Row Level Security policies and grants
-4. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
+4. `supabase/migrations/0004_admin_clients.sql` — client directory view, audited account-status RPC, audit triggers
+5. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
 
 Every file is idempotent where practical and safe to re-run.
+
+### Edge Functions
+
+Privileged client creation runs server-side with the service role key:
+
+```bash
+supabase functions deploy admin-create-client --project-ref <project-ref>
+```
+
+The function verifies the caller's JWT, re-checks `role = 'admin'` and `account_status = 'approved'`
+against `profiles`, and only then creates the auth user. No service-role key ever reaches the browser.
 
 ### First admin
 
@@ -102,6 +114,21 @@ reset role;
 ```
 
 6. `select tablename, rowsecurity from pg_tables where schemaname = 'public';` → `rowsecurity = true` for all nine tables.
+
+### Phase 2 acceptance
+
+1. **Clients page** (`/admin/clients`): search by name/email/member code, filter by account and
+   membership status, sort, paginate. Filters reset paging.
+2. **Approvals** (`/admin/approvals`): pending registrations listed oldest-first; Approve/Reject
+   with confirmation; sidebar shows a live pending badge.
+3. **Client profile** (`/admin/clients/:id`): edit display name, member code, phone, DOB, height,
+   emergency contact, notes; email is read-only; subscription history shown.
+4. **Create client** (Add client): calls the `admin-create-client` Edge Function. The account is
+   approved immediately and appears in the directory. Duplicate emails/member codes return a
+   clear error and the auth user is rolled back.
+5. **Suspend/Reactivate** writes through `admin_set_account_status` and appends `audit_logs`
+   rows (`create_client`, `update`). Non-admins calling the RPC or Edge Function get 403.
+6. A client reading `admin_client_directory` sees only their own row.
 
 ## 4. Project structure
 

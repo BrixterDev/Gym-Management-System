@@ -16,7 +16,7 @@ export type SubscriptionStatus = 'active' | 'expired' | 'cancelled' | 'paused'
 export type PaymentMethod = 'cash' | 'gcash' | 'card' | 'bank_transfer'
 export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded'
 
-export interface GymSettingsRow {
+export type GymSettingsRow = {
   id: string
   timezone: string
   client_qr_url: string | null
@@ -25,7 +25,7 @@ export interface GymSettingsRow {
   updated_at: string
 }
 
-export interface ProfileRow {
+export type ProfileRow = {
   id: string
   email: string
   phone: string | null
@@ -36,7 +36,7 @@ export interface ProfileRow {
   updated_at: string
 }
 
-export interface ClientDetailRow {
+export type ClientDetailRow = {
   id: string
   client_id: string
   display_name: string | null
@@ -49,7 +49,7 @@ export interface ClientDetailRow {
   updated_at: string
 }
 
-export interface MembershipPlanRow {
+export type MembershipPlanRow = {
   id: string
   name: string
   description: string | null
@@ -60,7 +60,7 @@ export interface MembershipPlanRow {
   updated_at: string
 }
 
-export interface MembershipRow {
+export type MembershipRow = {
   id: string
   client_id: string
   plan_id: string
@@ -74,7 +74,7 @@ export interface MembershipRow {
   updated_at: string
 }
 
-export interface AttendanceRow {
+export type AttendanceRow = {
   id: string
   client_id: string
   time_in: string
@@ -83,7 +83,7 @@ export interface AttendanceRow {
   created_at: string
 }
 
-export interface BodyMetricRow {
+export type BodyMetricRow = {
   id: string
   client_id: string
   measured_at: string
@@ -96,7 +96,7 @@ export interface BodyMetricRow {
   updated_at: string
 }
 
-export interface PaymentRow {
+export type PaymentRow = {
   id: string
   membership_id: string
   amount: number
@@ -108,7 +108,7 @@ export interface PaymentRow {
   created_at: string
 }
 
-export interface AuditLogRow {
+export type AuditLogRow = {
   id: string
   actor_id: string | null
   action: string
@@ -119,12 +119,49 @@ export interface AuditLogRow {
   created_at: string
 }
 
-type TableDef<Row, Insert, Update> = {
+export type ClientDirectoryRow = {
+  id: string
+  email: string
+  phone: string | null
+  role: UserRole
+  account_status: AccountStatus
+  membership_status: MembershipStatus
+  created_at: string
+  updated_at: string
+  client_detail_id: string | null
+  display_name: string | null
+  member_code: string | null
+  height_cm: number | null
+  date_of_birth: string | null
+  emergency_contact: string | null
+  notes: string | null
+  detail_updated_at: string | null
+}
+
+type Relationship = {
+  foreignKeyName: string
+  columns: string[]
+  isOneToOne?: boolean
+  referencedRelation: string
+  referencedColumns: string[]
+}
+
+type TableDef<Row, Insert, Update, Rels extends Relationship[] = []> = {
   Row: Row
   Insert: Insert
   Update: Update
-  Relationships: []
+  Relationships: Rels
 }
+
+type MembershipRelationships = [
+  {
+    foreignKeyName: 'memberships_plan_id_fkey'
+    columns: ['plan_id']
+    isOneToOne: false
+    referencedRelation: 'membership_plans'
+    referencedColumns: ['id']
+  },
+]
 
 export interface Database {
   public: {
@@ -200,7 +237,8 @@ export interface Database {
           created_at?: string
           updated_at?: string
         },
-        Partial<MembershipRow>
+        Partial<MembershipRow>,
+        MembershipRelationships
       >
       attendance: TableDef<
         AttendanceRow,
@@ -260,10 +298,20 @@ export interface Database {
         Partial<AuditLogRow>
       >
     }
-    Views: Record<string, never>
+    Views: {
+      admin_client_directory: {
+        Row: ClientDirectoryRow
+        Relationships: []
+      }
+    }
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean }
       recompute_membership_status: { Args: { p_client_id: string }; Returns: string }
+      admin_set_account_status: {
+        Args: { p_client_id: string; p_status: AccountStatus }
+        Returns: ProfileRow
+      }
+      pending_approval_count: { Args: Record<string, never>; Returns: number }
     }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>
