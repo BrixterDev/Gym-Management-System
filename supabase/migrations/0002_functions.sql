@@ -107,11 +107,12 @@ create trigger on_auth_user_email_changed
 
 -- -----------------------------------------------------------------------------
 -- profiles: clients may only ever change their phone number.
+-- NOTE: guard triggers intentionally run as INVOKER (no SECURITY DEFINER) so
+-- current_user/is_trusted_db_session reflects the real caller.
 -- -----------------------------------------------------------------------------
 create or replace function public.profiles_guard_update()
 returns trigger
 language plpgsql
-security definer
 set search_path = public
 as $$
 begin
@@ -147,7 +148,6 @@ create trigger profiles_guard_update
 create or replace function public.profiles_guard_mutation()
 returns trigger
 language plpgsql
-security definer
 set search_path = public
 as $$
 begin
@@ -179,7 +179,6 @@ create trigger profiles_guard_delete
 create or replace function public.body_metrics_guard()
 returns trigger
 language plpgsql
-security definer
 set search_path = public
 as $$
 declare
