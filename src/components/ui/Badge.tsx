@@ -1,4 +1,9 @@
-import type { AccountStatus, MembershipStatus, SubscriptionStatus } from '@/types/database'
+import type {
+  AccountStatus,
+  MembershipStatus,
+  PaymentStatus,
+  SubscriptionStatus,
+} from '@/types/database'
 import { cn } from '@/lib/utils'
 
 type BadgeTone = 'green' | 'amber' | 'red' | 'slate' | 'blue' | 'violet'
@@ -70,6 +75,21 @@ export function SubscriptionStatusBadge({ status }: { status: SubscriptionStatus
 export function MembershipStatusBadge({ status }: { status: MembershipStatus }) {
   return (
     <Badge tone={status === 'member' ? 'blue' : 'slate'} dot>
+      {status}
+    </Badge>
+  )
+}
+
+const paymentTone: Record<PaymentStatus, BadgeTone> = {
+  paid: 'green',
+  pending: 'amber',
+  failed: 'red',
+  refunded: 'violet',
+}
+
+export function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
+  return (
+    <Badge tone={paymentTone[status]} dot>
       {status}
     </Badge>
   )

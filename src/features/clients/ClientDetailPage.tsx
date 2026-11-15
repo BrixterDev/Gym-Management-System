@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
@@ -23,6 +23,7 @@ import {
   updateClientDetails,
 } from './api'
 import { ClientAvatar, ClientStatusActions } from './ClientStatusActions'
+import { AssignSubscriptionDialog } from '@/features/memberships/SubscriptionDialogs'
 
 const schema = z.object({
   display_name: z.string().trim().max(120, 'Keep it under 120 characters').optional(),
@@ -58,6 +59,7 @@ export function ClientDetailPage() {
   const { clientId = '' } = useParams()
   const toast = useToast()
   const queryClient = useQueryClient()
+  const [assignOpen, setAssignOpen] = useState(false)
 
   const clientQuery = useQuery({
     queryKey: ['client', clientId],
@@ -300,9 +302,25 @@ export function ClientDetailPage() {
               title="Subscriptions"
               description="Membership history for this client"
               action={
-                activeMembership && (
-                  <SubscriptionStatusBadge status={activeMembership.subscription_status} />
-                )
+                <div className="flex items-center gap-2">
+                  {activeMembership && (
+                    <SubscriptionStatusBadge status={activeMembership.subscription_status} />
+                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setAssignOpen(true)}
+                    disabled={Boolean(activeMembership)}
+                    title={
+                      activeMembership
+                        ? 'Renew or cancel the current subscription first'
+                        : undefined
+                    }
+                  >
+                    <CreditCard className="size-3.5" aria-hidden />
+                    Assign plan
+                  </Button>
+                </div>
               }
             />
             <CardBody className="p-0">
@@ -315,7 +333,12 @@ export function ClientDetailPage() {
                 <EmptyState
                   icon={<CreditCard className="size-7" aria-hidden />}
                   title="No subscriptions yet"
-                  description="Assign a plan to this client from the Subscriptions page."
+                  description="Assign a plan to this client to activate their membership."
+                  action={
+                    <Button size="sm" onClick={() => setAssignOpen(true)}>
+                      Assign plan
+                    </Button>
+                  }
                 />
               ) : (
                 <ul className="divide-y divide-slate-100">
@@ -402,6 +425,15 @@ export function ClientDetailPage() {
           </Card>
         </div>
       </div>
+
+      <AssignSubscriptionDialog
+        open={assignOpen}
+        onClose={() => setAssignOpen(false)}
+        defaultClient={{
+          id: client.id,
+          label: `${client.display_name ?? 'Unnamed member'} · ${client.email}`,
+        }}
+      />
     </div>
   )
 }

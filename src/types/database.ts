@@ -138,6 +138,64 @@ export type ClientDirectoryRow = {
   detail_updated_at: string | null
 }
 
+export type PlanDirectoryRow = {
+  id: string
+  name: string
+  description: string | null
+  duration_days: number
+  price: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+  live_subscribers: number
+  total_subscribers: number
+}
+
+export type SubscriptionDirectoryRow = {
+  id: string
+  client_id: string
+  plan_id: string
+  start_date: string
+  end_date: string
+  subscription_status: SubscriptionStatus
+  paused_at: string | null
+  paused_remaining_days: number | null
+  price_at_assignment: number
+  created_at: string
+  updated_at: string
+  email: string
+  account_status: AccountStatus
+  membership_status: MembershipStatus
+  display_name: string | null
+  member_code: string | null
+  plan_name: string
+  plan_duration_days: number
+  plan_price: number
+  paid_amount: number
+  pending_amount: number
+  payment_count: number
+}
+
+export type PaymentDirectoryRow = {
+  id: string
+  membership_id: string
+  amount: number
+  payment_date: string
+  payment_method: PaymentMethod
+  payment_status: PaymentStatus
+  reference_number: string | null
+  recorded_by: string | null
+  created_at: string
+  client_id: string
+  subscription_status: SubscriptionStatus
+  start_date: string
+  end_date: string
+  email: string
+  display_name: string | null
+  member_code: string | null
+  plan_name: string
+}
+
 type Relationship = {
   foreignKeyName: string
   columns: string[]
@@ -303,6 +361,26 @@ export interface Database {
         Row: ClientDirectoryRow
         Relationships: []
       }
+      admin_plan_directory: {
+        Row: PlanDirectoryRow
+        Relationships: []
+      }
+      admin_subscription_directory: {
+        Row: SubscriptionDirectoryRow
+        Relationships: []
+      }
+      admin_payments_directory: {
+        Row: PaymentDirectoryRow
+        Relationships: []
+      }
+      admin_payment_summary: {
+        Row: { payment_status: PaymentStatus; payment_count: number; total_amount: number }
+        Relationships: []
+      }
+      admin_subscription_summary: {
+        Row: { subscription_status: SubscriptionStatus; subscription_count: number }
+        Relationships: []
+      }
     }
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean }
@@ -312,6 +390,23 @@ export interface Database {
         Returns: ProfileRow
       }
       pending_approval_count: { Args: Record<string, never>; Returns: number }
+      gym_today: { Args: Record<string, never>; Returns: string }
+      admin_refresh_subscriptions: { Args: Record<string, never>; Returns: number }
+      admin_create_subscription: {
+        Args: { p_client_id: string; p_plan_id: string; p_start_date?: string | null }
+        Returns: MembershipRow
+      }
+      admin_renew_subscription: {
+        Args: { p_membership_id: string; p_plan_id?: string | null; p_start_date?: string | null }
+        Returns: MembershipRow
+      }
+      admin_pause_subscription: { Args: { p_membership_id: string }; Returns: MembershipRow }
+      admin_resume_subscription: { Args: { p_membership_id: string }; Returns: MembershipRow }
+      admin_cancel_subscription: { Args: { p_membership_id: string }; Returns: MembershipRow }
+      admin_change_subscription_plan: {
+        Args: { p_membership_id: string; p_plan_id: string }
+        Returns: MembershipRow
+      }
     }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>

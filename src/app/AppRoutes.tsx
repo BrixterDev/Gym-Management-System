@@ -11,6 +11,9 @@ import { ClientDashboardPage } from '@/features/dashboard/ClientDashboardPage'
 import { ClientsPage } from '@/features/clients/ClientsPage'
 import { ClientDetailPage } from '@/features/clients/ClientDetailPage'
 import { ApprovalsPage } from '@/features/clients/ApprovalsPage'
+import { MembershipPlansPage } from '@/features/memberships/MembershipPlansPage'
+import { SubscriptionsPage } from '@/features/memberships/SubscriptionsPage'
+import { PaymentsPage } from '@/features/payments/PaymentsPage'
 import { ComingSoonPage, NotFoundPage } from '@/pages/PlaceholderPages'
 import { CheckInPage } from '@/pages/CheckInPage'
 
@@ -35,22 +38,13 @@ export function AppRoutes() {
             <Route path="clients" element={<ClientsPage />} />
             <Route path="clients/:clientId" element={<ClientDetailPage />} />
             <Route path="approvals" element={<ApprovalsPage />} />
-            <Route
-              path="plans"
-              element={<ComingSoonPage title="Membership Plans" phase="Phase 3" />}
-            />
-            <Route
-              path="subscriptions"
-              element={<ComingSoonPage title="Subscriptions" phase="Phase 3" />}
-            />
+            <Route path="plans" element={<MembershipPlansPage />} />
+            <Route path="subscriptions" element={<SubscriptionsPage />} />
             <Route
               path="attendance"
               element={<ComingSoonPage title="Attendance" phase="Phase 4" />}
             />
-            <Route
-              path="payments"
-              element={<ComingSoonPage title="Payments" phase="Phase 3" />}
-            />
+            <Route path="payments" element={<PaymentsPage />} />
             <Route
               path="reports"
               element={<ComingSoonPage title="Reports" phase="Phase 6" />}

@@ -32,3 +32,23 @@ export function todayIsoDate() {
   const offset = now.getTimezoneOffset() * 60_000
   return new Date(now.getTime() - offset).toISOString().slice(0, 10)
 }
+
+export function formatCurrency(value: number | null | undefined) {
+  if (value == null) return '—'
+  return new Intl.NumberFormat('en-PH', {
+    style: 'currency',
+    currency: 'PHP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+export function daysBetween(from: string, to: string) {
+  const start = new Date(`${from}T00:00:00`)
+  const end = new Date(`${to}T00:00:00`)
+  return Math.round((end.getTime() - start.getTime()) / 86_400_000)
+}
+
+export function pluralize(count: number, singular: string, plural = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : plural}`
+}
