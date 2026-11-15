@@ -49,6 +49,51 @@ export function daysBetween(from: string, to: string) {
   return Math.round((end.getTime() - start.getTime()) / 86_400_000)
 }
 
+export function addDaysIso(date: string, days: number) {
+  const value = new Date(`${date}T00:00:00`)
+  value.setDate(value.getDate() + days)
+  const offset = value.getTimezoneOffset() * 60_000
+  return new Date(value.getTime() - offset).toISOString().slice(0, 10)
+}
+
+function safeDate(value: string | Date | null | undefined) {
+  if (!value) return null
+  const date = typeof value === 'string' ? new Date(value) : value
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+export function formatTimeIn(value: string | Date | null | undefined, timeZone?: string) {
+  const date = safeDate(value)
+  if (!date) return '—'
+  return new Intl.DateTimeFormat('en-PH', {
+    hour: 'numeric',
+    minute: '2-digit',
+    ...(timeZone ? { timeZone } : {}),
+  }).format(date)
+}
+
+export function formatDateTimeIn(value: string | Date | null | undefined, timeZone?: string) {
+  const date = safeDate(value)
+  if (!date) return '—'
+  return new Intl.DateTimeFormat('en-PH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    ...(timeZone ? { timeZone } : {}),
+  }).format(date)
+}
+
+export function formatDuration(minutes: number | null | undefined) {
+  if (minutes == null) return '—'
+  if (minutes < 1) return '< 1 min'
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  if (hours === 0) return `${rest} min`
+  return rest === 0 ? `${hours} h` : `${hours} h ${rest} min`
+}
+
 export function pluralize(count: number, singular: string, plural = `${singular}s`) {
   return `${count} ${count === 1 ? singular : plural}`
 }

@@ -4,11 +4,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ArrowLeft, CalendarCheck, CreditCard, Mail, Save, TrendingUp } from 'lucide-react'
+import { ArrowLeft, CalendarCheck, CreditCard, Mail, RefreshCw, Save, TrendingUp } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 import { PageHeader, EmptyState, Alert } from '@/components/ui/Feedback'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input, Textarea } from '@/components/ui/Input'
+import { ConfirmDialog } from '@/components/ui/Modal'
 import {
   AccountStatusBadge,
   MembershipStatusBadge,
@@ -24,6 +26,7 @@ import {
 } from './api'
 import { ClientAvatar, ClientStatusActions } from './ClientStatusActions'
 import { AssignSubscriptionDialog } from '@/features/memberships/SubscriptionDialogs'
+import { regenerateQrToken } from '@/features/attendance/attendanceApi'
 
 const schema = z.object({
   display_name: z.string().trim().max(120, 'Keep it under 120 characters').optional(),
@@ -60,6 +63,7 @@ export function ClientDetailPage() {
   const toast = useToast()
   const queryClient = useQueryClient()
   const [assignOpen, setAssignOpen] = useState(false)
+  const [qrConfirmOpen, setQrConfirmOpen] = useState(false)
 
   const clientQuery = useQuery({
     queryKey: ['client', clientId],
@@ -125,6 +129,17 @@ export function ClientDetailPage() {
       toast.success('Client details saved')
     },
     onError: (error) => toast.error('Could not save details', clientErrorMessage(error)),
+  })
+
+  const qrMutation = useMutation({
+    mutationFn: () => regenerateQrToken(clientId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['client', clientId] })
+      await queryClient.invalidateQueries({ queryKey: ['clients'] })
+      toast.success('QR code regenerated', 'The old code no longer checks this member in.')
+      setQrConfirmOpen(false)
+    },
+    onError: (error) => toast.error('Could not regenerate QR code', clientErrorMessage(error)),
   })
 
   if (clientQuery.isLoading) {
@@ -366,6 +381,41 @@ export function ClientDetailPage() {
 
         <div className="space-y-5">
           <Card>
+            <CardHeader title="Check-in QR" description="Scan at the front desk or show to the member" />
+            <CardBody className="text-center">
+              {client.qr_token ? (
+                <>
+                  <div className="mx-auto inline-flex rounded-xl border border-slate-200 bg-white p-3">
+                    <QRCodeSVG
+                      value={client.qr_token}
+                      size={148}
+                      level="M"
+                      marginSize={0}
+                      title={`QR code for ${client.display_name ?? client.email}`}
+                    />
+                  </div>
+                  <p className="mt-2 break-all font-mono text-[11px] text-slate-500">
+                    {client.qr_token}
+                  </p>
+                </>
+              ) : (
+                <p className="py-6 text-sm text-slate-500">QR code is not available yet.</p>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 w-full"
+                onClick={() => setQrConfirmOpen(true)}
+                loading={qrMutation.isPending}
+                disabled={!client.qr_token}
+              >
+                <RefreshCw className="size-3.5" aria-hidden />
+                Regenerate QR
+              </Button>
+            </CardBody>
+          </Card>
+
+          <Card>
             <CardHeader title="Account" />
             <CardBody className="space-y-3 text-sm">
               <div className="flex items-center justify-between gap-3">
@@ -433,6 +483,16 @@ export function ClientDetailPage() {
           id: client.id,
           label: `${client.display_name ?? 'Unnamed member'} · ${client.email}`,
         }}
+      />
+
+      <ConfirmDialog
+        open={qrConfirmOpen}
+        onClose={() => setQrConfirmOpen(false)}
+        onConfirm={() => qrMutation.mutate()}
+        title="Regenerate check-in QR"
+        description="The member's current QR code will stop working immediately. Use this if the old code was shared or lost."
+        confirmLabel="Regenerate QR"
+        loading={qrMutation.isPending}
       />
     </div>
   )

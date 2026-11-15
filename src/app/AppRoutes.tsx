@@ -14,6 +14,8 @@ import { ApprovalsPage } from '@/features/clients/ApprovalsPage'
 import { MembershipPlansPage } from '@/features/memberships/MembershipPlansPage'
 import { SubscriptionsPage } from '@/features/memberships/SubscriptionsPage'
 import { PaymentsPage } from '@/features/payments/PaymentsPage'
+import { AttendancePage } from '@/features/attendance/AttendancePage'
+import { ClientAttendancePage } from '@/features/attendance/ClientAttendancePage'
 import { ComingSoonPage, NotFoundPage } from '@/pages/PlaceholderPages'
 import { CheckInPage } from '@/pages/CheckInPage'
 
@@ -40,10 +42,7 @@ export function AppRoutes() {
             <Route path="approvals" element={<ApprovalsPage />} />
             <Route path="plans" element={<MembershipPlansPage />} />
             <Route path="subscriptions" element={<SubscriptionsPage />} />
-            <Route
-              path="attendance"
-              element={<ComingSoonPage title="Attendance" phase="Phase 4" />}
-            />
+            <Route path="attendance" element={<AttendancePage />} />
             <Route path="payments" element={<PaymentsPage />} />
             <Route
               path="reports"
@@ -60,10 +59,7 @@ export function AppRoutes() {
         <Route element={<RequireRole role="client" />}>
           <Route path="/app" element={<ClientLayout />}>
             <Route index element={<ClientDashboardPage />} />
-            <Route
-              path="attendance"
-              element={<ComingSoonPage title="My Attendance" phase="Phase 4" />}
-            />
+            <Route path="attendance" element={<ClientAttendancePage />} />
             <Route
               path="progress"
               element={<ComingSoonPage title="My Progress" phase="Phase 5" />}

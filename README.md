@@ -13,8 +13,8 @@ A secure, responsive gym management application for gym owners and members.
 | 1 | Architecture, migrations, RLS, `gym_settings`, authentication | ✅ Complete |
 | 2 | Client management, `client_details`, approvals, account status | ✅ Complete |
 | 3 | Plans, subscriptions lifecycle, payments | ✅ Complete |
-| 4 | Attendance, QR codes, check-in/out, admin corrections | ⏳ Next |
-| 5 | Body metrics, self-entry, progress charts | ⏳ |
+| 4 | Attendance, QR codes, check-in/out, admin corrections | ✅ Complete |
+| 5 | Body metrics, self-entry, progress charts | ⏳ Next |
 | 6 | Analytics, reports, CSV export | ⏳ |
 | 7 | Polish, mobile optimization, deployment, acceptance testing | ⏳ |
 
@@ -47,7 +47,8 @@ Open **Supabase Dashboard → SQL Editor** and run these files **in order**:
 4. `supabase/migrations/0004_admin_clients.sql` — client directory view, audited account-status RPC, audit triggers
 5. `supabase/migrations/0005_memberships.sql` — subscription lifecycle RPCs, billing audit triggers, admin billing views
 6. `supabase/migrations/0006_billing_summaries.sql` — payment and subscription summary views
-7. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
+7. `supabase/migrations/0007_attendance.sql` — QR tokens, check-in/out RPCs, admin corrections, attendance views
+8. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
 
 Every file is idempotent where practical and safe to re-run.
 
@@ -160,13 +161,38 @@ reset role;
    project: assign → duplicate blocked → pause → resume → renew → change plan → cancel → renew
    rejected; inactive plans rejected; client reads scoped to own rows.
 
+### Phase 4 acceptance
+
+1. **Member QR:** every client profile carries a random `client_details.qr_token`. Members see their
+   QR on `/checkin`; admins see it on the client profile and can regenerate it (the old token stops
+   working immediately).
+2. **Member self check-in** (`/checkin`): one tap times in or out. `/app/attendance` lists the
+   member's visit history with durations, status, and pagination.
+3. **Admin scanner** (`/admin/attendance` → Scan member): camera QR scanning where the browser
+   supports `BarcodeDetector`, with manual QR-token/member-code entry as a fallback. One action
+   toggles check-in or check-out and shows the member name, code, and time.
+4. **Server-side eligibility:** check-in requires an approved account and a subscription that is
+   `active` and within `start_date..end_date` (evaluated with `gym_today()`). Paused, cancelled,
+   expired, future-dated, and non-approved accounts are rejected by the RPC, not just the UI.
+5. **Sessions:** the unique open-session index blocks double check-ins even under concurrency.
+   Check-out stamps `time_out` server-side and sets `expired_during_session` if the membership
+   lapsed during the visit. Open sessions can also be closed from the admin table.
+6. **Admin corrections:** edit time in/out (database validates order and open-session conflicts) or
+   delete a record. Every insert/update/delete is written to `audit_logs`. Clients cannot call admin
+   attendance RPCs (`403`) and only see their own rows through RLS.
+7. **Stats:** today's visits, currently-in-gym, last-7-days visits, and average session length today
+   come from `admin_attendance_stats` using the gym timezone.
+8. **Verification:** `npm run build` passes. Live E2E passed: self in → double blocked → self out →
+   admin in by member code → admin out by QR → paused rejected → cancelled rejected → correction →
+   invalid correction rejected → RLS scoping → stats → QR regeneration with old token rejected.
+
 ## 4. Project structure
 
 ```
 src/
   app/            routing, guards, query client
   components/ui/  reusable primitives (button, input, badge, card, feedback)
-  features/       auth, dashboard, clients, memberships, payments (attendance, metrics, reports next)
+  features/       auth, dashboard, clients, memberships, payments, attendance (metrics, reports next)
   layouts/        auth layout, portal shell (sidebar + mobile nav)
   lib/            supabase client, env, utilities
   pages/          check-in, placeholders, 404
@@ -201,6 +227,9 @@ Defence in depth:
 - Subscription dates, prices, and statuses are derived by `SECURITY DEFINER` RPCs; clients cannot
   insert or update `memberships` or `payments` directly. Audit triggers on `membership_plans`,
   `memberships`, and `payments` record `before_data`/`after_data` with the acting admin.
+- Attendance writes go through guarded RPCs. Check-in re-validates the live subscription in the
+  database, QR tokens are random UUIDs, and clients can only read their own attendance rows. Admin
+  corrections and QR regeneration are audited.
 
 ## 6. Deployment (summary — full config in Phase 7)
 

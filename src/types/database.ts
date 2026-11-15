@@ -45,6 +45,7 @@ export type ClientDetailRow = {
   date_of_birth: string | null
   emergency_contact: string | null
   notes: string | null
+  qr_token: string
   created_at: string
   updated_at: string
 }
@@ -135,6 +136,7 @@ export type ClientDirectoryRow = {
   date_of_birth: string | null
   emergency_contact: string | null
   notes: string | null
+  qr_token: string | null
   detail_updated_at: string | null
 }
 
@@ -194,6 +196,45 @@ export type PaymentDirectoryRow = {
   display_name: string | null
   member_code: string | null
   plan_name: string
+}
+
+export type AttendanceVisitState = 'open' | 'closed'
+
+export type AttendanceDirectoryRow = {
+  id: string
+  client_id: string
+  email: string
+  account_status: AccountStatus
+  display_name: string | null
+  member_code: string | null
+  qr_token: string | null
+  time_in: string
+  time_out: string | null
+  expired_during_session: boolean
+  created_at: string
+  visit_date: string
+  duration_minutes: number | null
+  visit_state: AttendanceVisitState
+  plan_id: string | null
+  plan_name: string | null
+  subscription_status: SubscriptionStatus | null
+}
+
+export type AttendanceStatsRow = {
+  today: string
+  today_visits: number
+  currently_in: number
+  week_visits: number
+  avg_minutes_today: number | null
+}
+
+export type ToggleAttendanceResult = {
+  action: 'checked_in' | 'checked_out'
+  attendance_id: string
+  client_id: string
+  display_name: string | null
+  member_code: string | null
+  occurred_at: string
 }
 
 type Relationship = {
@@ -381,6 +422,14 @@ export interface Database {
         Row: { subscription_status: SubscriptionStatus; subscription_count: number }
         Relationships: []
       }
+      admin_attendance_directory: {
+        Row: AttendanceDirectoryRow
+        Relationships: []
+      }
+      admin_attendance_stats: {
+        Row: AttendanceStatsRow
+        Relationships: []
+      }
     }
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean }
@@ -407,6 +456,18 @@ export interface Database {
         Args: { p_membership_id: string; p_plan_id: string }
         Returns: MembershipRow
       }
+      client_check_in: { Args: Record<string, never>; Returns: AttendanceRow }
+      client_check_out: { Args: Record<string, never>; Returns: AttendanceRow }
+      admin_toggle_attendance: {
+        Args: { p_code: string }
+        Returns: ToggleAttendanceResult[]
+      }
+      admin_close_attendance: { Args: { p_attendance_id: string }; Returns: AttendanceRow }
+      admin_update_attendance: {
+        Args: { p_attendance_id: string; p_time_in: string; p_time_out: string | null }
+        Returns: AttendanceRow
+      }
+      admin_regenerate_client_qr: { Args: { p_client_id: string }; Returns: string }
     }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>
