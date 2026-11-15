@@ -1,0 +1,13 @@
+const url = import.meta.env.VITE_SUPABASE_URL
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!url || !anonKey) {
+  throw new Error(
+    'Missing Supabase environment variables. Copy .env.example to .env.local and set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
+  )
+}
+
+export const env = {
+  supabaseUrl: url as string,
+  supabaseAnonKey: anonKey as string,
+}
