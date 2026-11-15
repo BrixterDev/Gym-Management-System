@@ -14,8 +14,8 @@ A secure, responsive gym management application for gym owners and members.
 | 2 | Client management, `client_details`, approvals, account status | ✅ Complete |
 | 3 | Plans, subscriptions lifecycle, payments | ✅ Complete |
 | 4 | Attendance, QR codes, check-in/out, admin corrections | ✅ Complete |
-| 5 | Body metrics, self-entry, progress charts | ⏳ Next |
-| 6 | Analytics, reports, CSV export | ⏳ |
+| 5 | Body metrics, self-entry, progress charts | ✅ Complete |
+| 6 | Analytics, reports, CSV export | ⏳ Next |
 | 7 | Polish, mobile optimization, deployment, acceptance testing | ⏳ |
 
 ---
@@ -48,7 +48,8 @@ Open **Supabase Dashboard → SQL Editor** and run these files **in order**:
 5. `supabase/migrations/0005_memberships.sql` — subscription lifecycle RPCs, billing audit triggers, admin billing views
 6. `supabase/migrations/0006_billing_summaries.sql` — payment and subscription summary views
 7. `supabase/migrations/0007_attendance.sql` — QR tokens, check-in/out RPCs, admin corrections, attendance views
-8. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
+8. `supabase/migrations/0008_metrics.sql` — body metrics audit trigger + BMI directory view
+9. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
 
 Every file is idempotent where practical and safe to re-run.
 
@@ -186,13 +187,35 @@ reset role;
    admin in by member code → admin out by QR → paused rejected → cancelled rejected → correction →
    invalid correction rejected → RLS scoping → stats → QR regeneration with old token rejected.
 
+### Phase 5 acceptance
+
+1. **My Progress** (`/app/progress`): members record weight, height, and waist with a measurement
+   time and optional notes. At least one measurement is required; ranges are validated in the form
+   and by database check constraints.
+2. **Summary + charts:** latest weight, BMI (with category), waist, and height cards. Recharts line
+   charts show weight and waist trends; a chart asks for a second data point when there is only one.
+3. **History:** full measurement table with source badges (**Self** vs **Gym**) and derived BMI.
+   Members can edit/delete only rows they recorded themselves; admin-recorded rows are read-only.
+4. **Admin recording:** the client profile has a **Body metrics** card with the latest measurements
+   and a Record/Edit dialog. Rows created by an admin are attributed to that admin (`recorded_by`).
+5. **Profile** (`/app/profile`): account identity, current membership and validity, read-only personal
+   details, and a phone editor. The database guard still only permits `phone` changes — attempts to
+   alter `role` or other fields are rejected.
+6. **Security:** RLS prevents members from inserting metrics for another client; the
+   `body_metrics_guard` forces `recorded_by` to the acting user and blocks edits to admin rows.
+   `admin_body_metrics_directory` uses `security_invoker`, so members only see their own history.
+7. **Audit:** all `body_metrics` inserts/updates/deletes are written to `audit_logs`.
+8. **Verification:** `npm run build` passes. Live E2E passed: self insert → BMI view → self update →
+   cross-client insert blocked → admin insert → member edit of admin row ignored → RLS scoping →
+   phone update → role escalation blocked → self delete → admin delete → audit rows present.
+
 ## 4. Project structure
 
 ```
 src/
   app/            routing, guards, query client
   components/ui/  reusable primitives (button, input, badge, card, feedback)
-  features/       auth, dashboard, clients, memberships, payments, attendance (metrics, reports next)
+  features/       auth, dashboard, clients, memberships, payments, attendance, metrics, profile (reports next)
   layouts/        auth layout, portal shell (sidebar + mobile nav)
   lib/            supabase client, env, utilities
   pages/          check-in, placeholders, 404
@@ -230,6 +253,9 @@ Defence in depth:
 - Attendance writes go through guarded RPCs. Check-in re-validates the live subscription in the
   database, QR tokens are random UUIDs, and clients can only read their own attendance rows. Admin
   corrections and QR regeneration are audited.
+- Body metric ownership is enforced by trigger and RLS: clients can only write rows they recorded
+  for themselves, `recorded_by` cannot be spoofed, and admin-recorded measurements are read-only to
+  members. Metric changes are audited.
 
 ## 6. Deployment (summary — full config in Phase 7)
 

@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { QrCode, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { PageHeader, Alert } from '@/components/ui/Feedback'
@@ -8,12 +9,23 @@ import {
   MembershipStatusBadge,
 } from '@/components/ui/Badge'
 import { Link } from 'react-router-dom'
-import { formatDate } from '@/lib/utils'
+import { calculateBmi, formatDate } from '@/lib/utils'
+import { listMyMetrics } from '@/features/metrics/metricsApi'
 
 export function ClientDashboardPage() {
   const { profile, clientDetail } = useAuth()
   const location = useLocation()
   const notice = (location.state as { notice?: string } | null)?.notice
+
+  const metricsQuery = useQuery({
+    queryKey: ['metrics', 'mine', profile?.id],
+    queryFn: () => listMyMetrics(profile!.id),
+    enabled: Boolean(profile?.id),
+  })
+  const latestMetric = metricsQuery.data?.[0] ?? null
+  const latestBmi =
+    latestMetric?.bmi ??
+    calculateBmi(latestMetric?.weight_kg, latestMetric?.height_cm ?? clientDetail?.height_cm ?? null)
 
   return (
     <div>
@@ -77,17 +89,69 @@ export function ClientDashboardPage() {
       </div>
 
       <Card className="mt-4">
-        <CardHeader title="Fitness progress" description="Weight, height, and waist trends" />
-        <CardBody className="flex items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
-            <TrendingUp className="size-5" aria-hidden />
-          </span>
-          <p className="text-sm leading-relaxed text-slate-600">
-            Progress tracking and charts arrive in Phase 5. You'll be able to record weight, height,
-            and waist measurements and review your trend over time.
-          </p>
+        <CardHeader
+          title="Fitness progress"
+          description="Your latest body measurements"
+          action={
+            <Link
+              to="/app/progress"
+              className="text-sm font-medium text-brand-700 hover:text-brand-800"
+            >
+              View all
+            </Link>
+          }
+        />
+        <CardBody>
+          {metricsQuery.isLoading ? (
+            <div className="space-y-2">
+              <div className="h-4 w-40 animate-pulse rounded bg-slate-100" />
+              <div className="h-4 w-56 animate-pulse rounded bg-slate-50" />
+            </div>
+          ) : latestMetric ? (
+            <div className="grid grid-cols-3 gap-3">
+              <MetricTile
+                label="Weight"
+                value={latestMetric.weight_kg != null ? `${latestMetric.weight_kg} kg` : '—'}
+              />
+              <MetricTile
+                label="Waist"
+                value={latestMetric.waist_cm != null ? `${latestMetric.waist_cm} cm` : '—'}
+              />
+              <MetricTile label="BMI" value={latestBmi != null ? String(latestBmi) : '—'} />
+              <p className="col-span-3 flex items-center gap-2 text-xs text-slate-500">
+                <TrendingUp className="size-3.5" aria-hidden />
+                Last measured {formatDate(latestMetric.measured_at)}
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-start gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+                <TrendingUp className="size-5" aria-hidden />
+              </span>
+              <div>
+                <p className="text-sm leading-relaxed text-slate-600">
+                  Track your weight, height, and waist to see progress over time.
+                </p>
+                <Link
+                  to="/app/progress"
+                  className="mt-2 inline-flex text-sm font-medium text-brand-700 hover:text-brand-800"
+                >
+                  Add your first measurement
+                </Link>
+              </div>
+            </div>
+          )}
         </CardBody>
       </Card>
+    </div>
+  )
+}
+
+function MetricTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2">
+      <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{label}</p>
+      <p className="mt-0.5 text-sm font-semibold text-slate-900">{value}</p>
     </div>
   )
 }

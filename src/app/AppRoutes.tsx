@@ -16,6 +16,8 @@ import { SubscriptionsPage } from '@/features/memberships/SubscriptionsPage'
 import { PaymentsPage } from '@/features/payments/PaymentsPage'
 import { AttendancePage } from '@/features/attendance/AttendancePage'
 import { ClientAttendancePage } from '@/features/attendance/ClientAttendancePage'
+import { ProgressPage } from '@/features/metrics/ProgressPage'
+import { ProfilePage } from '@/features/profile/ProfilePage'
 import { ComingSoonPage, NotFoundPage } from '@/pages/PlaceholderPages'
 import { CheckInPage } from '@/pages/CheckInPage'
 
@@ -60,14 +62,8 @@ export function AppRoutes() {
           <Route path="/app" element={<ClientLayout />}>
             <Route index element={<ClientDashboardPage />} />
             <Route path="attendance" element={<ClientAttendancePage />} />
-            <Route
-              path="progress"
-              element={<ComingSoonPage title="My Progress" phase="Phase 5" />}
-            />
-            <Route
-              path="profile"
-              element={<ComingSoonPage title="My Profile" phase="Phase 5" />}
-            />
+            <Route path="progress" element={<ProgressPage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/app" replace />} />
           </Route>
           <Route path="/checkin" element={<CheckInPage />} />

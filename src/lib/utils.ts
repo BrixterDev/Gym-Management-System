@@ -94,6 +94,20 @@ export function formatDuration(minutes: number | null | undefined) {
   return rest === 0 ? `${hours} h` : `${hours} h ${rest} min`
 }
 
+export function calculateBmi(weightKg: number | null | undefined, heightCm: number | null | undefined) {
+  if (weightKg == null || heightCm == null || weightKg <= 0 || heightCm <= 0) return null
+  const heightM = heightCm / 100
+  return Math.round((weightKg / (heightM * heightM)) * 10) / 10
+}
+
+export function bmiCategory(bmi: number | null | undefined) {
+  if (bmi == null) return null
+  if (bmi < 18.5) return 'Underweight'
+  if (bmi < 25) return 'Healthy'
+  if (bmi < 30) return 'Overweight'
+  return 'Obese'
+}
+
 export function pluralize(count: number, singular: string, plural = `${singular}s`) {
   return `${count} ${count === 1 ? singular : plural}`
 }

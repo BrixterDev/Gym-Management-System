@@ -237,6 +237,24 @@ export type ToggleAttendanceResult = {
   occurred_at: string
 }
 
+export type BodyMetricsDirectoryRow = {
+  id: string
+  client_id: string
+  email: string
+  display_name: string | null
+  member_code: string | null
+  measured_at: string
+  weight_kg: number | null
+  height_cm: number | null
+  waist_cm: number | null
+  bmi: number | null
+  notes: string | null
+  recorded_by: string
+  recorded_by_email: string | null
+  created_at: string
+  updated_at: string
+}
+
 type Relationship = {
   foreignKeyName: string
   columns: string[]
@@ -428,6 +446,10 @@ export interface Database {
       }
       admin_attendance_stats: {
         Row: AttendanceStatsRow
+        Relationships: []
+      }
+      admin_body_metrics_directory: {
+        Row: BodyMetricsDirectoryRow
         Relationships: []
       }
     }

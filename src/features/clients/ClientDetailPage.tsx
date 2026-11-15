@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ArrowLeft, CalendarCheck, CreditCard, Mail, RefreshCw, Save, TrendingUp } from 'lucide-react'
+import { ArrowLeft, Activity, CalendarCheck, CreditCard, Mail, Plus, RefreshCw, Save, TrendingUp } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { PageHeader, EmptyState, Alert } from '@/components/ui/Feedback'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
@@ -13,6 +13,7 @@ import { Input, Textarea } from '@/components/ui/Input'
 import { ConfirmDialog } from '@/components/ui/Modal'
 import {
   AccountStatusBadge,
+  Badge,
   MembershipStatusBadge,
   SubscriptionStatusBadge,
 } from '@/components/ui/Badge'
@@ -27,6 +28,9 @@ import {
 import { ClientAvatar, ClientStatusActions } from './ClientStatusActions'
 import { AssignSubscriptionDialog } from '@/features/memberships/SubscriptionDialogs'
 import { regenerateQrToken } from '@/features/attendance/attendanceApi'
+import { listClientMetrics } from '@/features/metrics/metricsApi'
+import { MetricFormDialog } from '@/features/metrics/MetricFormDialog'
+import type { BodyMetricsDirectoryRow } from '@/types/database'
 
 const schema = z.object({
   display_name: z.string().trim().max(120, 'Keep it under 120 characters').optional(),
@@ -64,6 +68,8 @@ export function ClientDetailPage() {
   const queryClient = useQueryClient()
   const [assignOpen, setAssignOpen] = useState(false)
   const [qrConfirmOpen, setQrConfirmOpen] = useState(false)
+  const [metricOpen, setMetricOpen] = useState(false)
+  const [editingMetric, setEditingMetric] = useState<BodyMetricsDirectoryRow | null>(null)
 
   const clientQuery = useQuery({
     queryKey: ['client', clientId],
@@ -74,6 +80,12 @@ export function ClientDetailPage() {
   const membershipsQuery = useQuery({
     queryKey: ['client-memberships', clientId],
     queryFn: () => listClientMemberships(clientId),
+    enabled: Boolean(clientId),
+  })
+
+  const metricsQuery = useQuery({
+    queryKey: ['client-metrics', clientId],
+    queryFn: () => listClientMetrics(clientId),
     enabled: Boolean(clientId),
   })
 
@@ -186,6 +198,7 @@ export function ClientDetailPage() {
   }
 
   const memberships = membershipsQuery.data ?? []
+  const metrics = metricsQuery.data ?? []
   const activeMembership = memberships.find((m) =>
     ['active', 'paused'].includes(m.subscription_status),
   )
@@ -377,6 +390,86 @@ export function ClientDetailPage() {
               )}
             </CardBody>
           </Card>
+
+          <Card>
+            <CardHeader
+              title="Body metrics"
+              description="Latest measurements and BMI"
+              action={
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setEditingMetric(null)
+                    setMetricOpen(true)
+                  }}
+                >
+                  <Plus className="size-3.5" aria-hidden />
+                  Record
+                </Button>
+              }
+            />
+            <CardBody className="p-0">
+              {metricsQuery.isLoading ? (
+                <div className="space-y-2 p-5">
+                  <div className="h-4 w-40 animate-pulse rounded bg-slate-100" />
+                  <div className="h-4 w-52 animate-pulse rounded bg-slate-50" />
+                </div>
+              ) : metrics.length === 0 ? (
+                <EmptyState
+                  icon={<Activity className="size-7" aria-hidden />}
+                  title="No measurements yet"
+                  description="Record the member's first weight, height, or waist measurement."
+                  action={
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setEditingMetric(null)
+                        setMetricOpen(true)
+                      }}
+                    >
+                      Record measurement
+                    </Button>
+                  }
+                />
+              ) : (
+                <ul className="divide-y divide-slate-100">
+                  {metrics.slice(0, 6).map((metric) => (
+                    <li
+                      key={metric.id}
+                      className="flex items-center justify-between gap-3 px-5 py-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-slate-900">
+                          {formatDate(metric.measured_at)}
+                        </p>
+                        <p className="mt-0.5 text-xs text-slate-500">
+                          {metric.weight_kg != null ? `${metric.weight_kg} kg` : '—'} ·{' '}
+                          {metric.waist_cm != null ? `${metric.waist_cm} cm waist` : 'no waist'}
+                          {metric.bmi != null ? ` · BMI ${metric.bmi}` : ''}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Badge tone={metric.recorded_by === client.id ? 'blue' : 'violet'} dot>
+                          {metric.recorded_by === client.id ? 'Self' : 'Gym'}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingMetric(metric)
+                            setMetricOpen(true)
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardBody>
+          </Card>
         </div>
 
         <div className="space-y-5">
@@ -461,15 +554,18 @@ export function ClientDetailPage() {
           <Card>
             <CardHeader title="Activity" />
             <CardBody className="space-y-2.5 text-sm">
-              <div className="flex items-center gap-2.5 text-slate-600">
+              <Link
+                to="/admin/attendance"
+                className="flex items-center gap-2.5 text-slate-600 hover:text-brand-700"
+              >
                 <CalendarCheck className="size-4 text-slate-400" aria-hidden />
                 <span>Attendance history</span>
-                <span className="ml-auto text-xs text-slate-400">Phase 4</span>
-              </div>
+                <span className="ml-auto text-xs text-slate-400">Open</span>
+              </Link>
               <div className="flex items-center gap-2.5 text-slate-600">
                 <TrendingUp className="size-4 text-slate-400" aria-hidden />
                 <span>Body metrics</span>
-                <span className="ml-auto text-xs text-slate-400">Phase 5</span>
+                <span className="ml-auto text-xs text-slate-400">Shown above</span>
               </div>
             </CardBody>
           </Card>
@@ -493,6 +589,15 @@ export function ClientDetailPage() {
         description="The member's current QR code will stop working immediately. Use this if the old code was shared or lost."
         confirmLabel="Regenerate QR"
         loading={qrMutation.isPending}
+      />
+
+      <MetricFormDialog
+        open={metricOpen}
+        onClose={() => setMetricOpen(false)}
+        clientId={client.id}
+        metric={editingMetric}
+        defaultHeight={client.height_cm}
+        scope="admin"
       />
     </div>
   )
