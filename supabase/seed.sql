@@ -105,6 +105,7 @@ $$;
 -- -----------------------------------------------------------------------------
 insert into public.membership_plans (name, description, duration_days, price)
 values
+  ('Day Pass', 'Single-day gym access, valid until closing on the date of purchase', 1, 150.00),
   ('Monthly', '30 days of full gym access', 30, 1500.00),
   ('Quarterly', '90 days of full gym access', 90, 4000.00),
   ('Annual', '365 days of full gym access', 365, 14000.00)

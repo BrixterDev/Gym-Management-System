@@ -143,10 +143,12 @@ export function AssignSubscriptionDialog({
   open,
   onClose,
   defaultClient,
+  defaultPlanId,
 }: {
   open: boolean
   onClose: () => void
   defaultClient?: PickedClient
+  defaultPlanId?: string
 }) {
   const toast = useToast()
   const queryClient = useQueryClient()
@@ -173,9 +175,9 @@ export function AssignSubscriptionDialog({
   useEffect(() => {
     if (!open) return
     setClient(defaultClient ?? null)
-    reset({ plan_id: '', start_date: todayIsoDate() })
+    reset({ plan_id: defaultPlanId ?? '', start_date: todayIsoDate() })
     setFormError(null)
-  }, [open, defaultClient?.id, reset])
+  }, [open, defaultClient?.id, defaultPlanId, reset])
 
   const planId = watch('plan_id')
   const startDate = watch('start_date')
@@ -234,7 +236,8 @@ export function AssignSubscriptionDialog({
           <option value="">{plansQuery.isLoading ? 'Loading plans…' : 'Choose a plan'}</option>
           {plans.map((plan) => (
             <option key={plan.id} value={plan.id}>
-              {plan.name} — {plan.duration_days} days — {formatCurrency(plan.price)}
+              {plan.name} — {plan.duration_days} {plan.duration_days === 1 ? 'day' : 'days'} —{' '}
+              {formatCurrency(plan.price)}
             </option>
           ))}
         </Select>
@@ -253,7 +256,9 @@ export function AssignSubscriptionDialog({
               {formatDate(startDate)} → {formatDate(addDays(startDate, selectedPlan.duration_days - 1))}
             </p>
             <p className="mt-1 text-xs text-brand-700">
-              {selectedPlan.duration_days} days · {formatCurrency(selectedPlan.price)} recorded as
+              {selectedPlan.duration_days}{' '}
+              {selectedPlan.duration_days === 1 ? 'day' : 'days'} ·{' '}
+              {formatCurrency(selectedPlan.price)} recorded as
               the subscription price.
             </p>
           </div>
@@ -363,7 +368,8 @@ export function RenewSubscriptionDialog({
         <Select label="Plan" error={errors.plan_id?.message} {...register('plan_id')}>
           {(plansQuery.data ?? []).map((plan) => (
             <option key={plan.id} value={plan.id}>
-              {plan.name} — {plan.duration_days} days — {formatCurrency(plan.price)}
+              {plan.name} — {plan.duration_days} {plan.duration_days === 1 ? 'day' : 'days'} —{' '}
+              {formatCurrency(plan.price)}
             </option>
           ))}
         </Select>
@@ -456,7 +462,8 @@ export function ChangePlanDialog({
           <option value="">Choose a plan</option>
           {options.map((plan) => (
             <option key={plan.id} value={plan.id}>
-              {plan.name} — {plan.duration_days} days — {formatCurrency(plan.price)}
+              {plan.name} — {plan.duration_days} {plan.duration_days === 1 ? 'day' : 'days'} —{' '}
+              {formatCurrency(plan.price)}
             </option>
           ))}
         </Select>

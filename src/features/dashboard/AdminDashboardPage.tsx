@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -5,6 +6,7 @@ import {
   BarChart3,
   CalendarCheck,
   QrCode,
+  Ticket,
   UserPlus,
   Users,
   Wallet,
@@ -12,9 +14,12 @@ import {
 import { useAuth } from '@/features/auth/AuthProvider'
 import { PageHeader, Alert } from '@/components/ui/Feedback'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
 import { Badge, AccountStatusBadge, MembershipStatusBadge } from '@/components/ui/Badge'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { getReportSummary, presetRange, reportErrorMessage } from '@/features/reports/reportsApi'
+import { listActivePlans } from '@/features/memberships/plansApi'
+import { AssignSubscriptionDialog } from '@/features/memberships/SubscriptionDialogs'
 
 const quickLinks = [
   {
@@ -46,11 +51,23 @@ const quickLinks = [
 export function AdminDashboardPage() {
   const { profile, clientDetail } = useAuth()
   const range = presetRange('30d')
+  const [dayPassOpen, setDayPassOpen] = useState(false)
 
   const summaryQuery = useQuery({
     queryKey: ['report-summary', range],
     queryFn: () => getReportSummary(range),
   })
+
+  const plansQuery = useQuery({
+    queryKey: ['active-plans'],
+    queryFn: listActivePlans,
+  })
+
+  const dayPassPlan = useMemo(
+    () =>
+      (plansQuery.data ?? []).find((plan) => plan.name.trim().toLowerCase() === 'day pass'),
+    [plansQuery.data],
+  )
 
   const summary = summaryQuery.data
 
@@ -142,6 +159,45 @@ export function AdminDashboardPage() {
         </Card>
       </div>
 
+      <Card className="mt-6 border-brand-200 bg-brand-50/50">
+        <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+              <Ticket className="size-5" aria-hidden />
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-slate-900">Walk-in day pass</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
+                Sell single-day access. The pass is valid until closing on the selected date.
+              </p>
+              {plansQuery.isLoading ? (
+                <p className="mt-1 text-xs text-slate-500">Loading plan…</p>
+              ) : dayPassPlan ? (
+                <p className="mt-1 text-xs font-medium text-brand-700">
+                  {formatCurrency(dayPassPlan.price)} · 1 day
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-amber-700">
+                  No active “Day Pass” plan. Create one in{' '}
+                  <Link to="/admin/plans" className="underline">
+                    Plans
+                  </Link>
+                  .
+                </p>
+              )}
+            </div>
+          </div>
+          <Button
+            className="shrink-0"
+            onClick={() => setDayPassOpen(true)}
+            disabled={!dayPassPlan}
+          >
+            <Ticket className="size-4" aria-hidden />
+            Sell day pass
+          </Button>
+        </CardBody>
+      </Card>
+
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {quickLinks.map((link) => (
           <Link
@@ -160,6 +216,12 @@ export function AdminDashboardPage() {
           </Link>
         ))}
       </div>
+
+      <AssignSubscriptionDialog
+        open={dayPassOpen}
+        onClose={() => setDayPassOpen(false)}
+        defaultPlanId={dayPassPlan?.id}
+      />
     </div>
   )
 }
