@@ -46,6 +46,8 @@ export function RequireRole({ role }: { role: UserRole }) {
 
   if (!profile) return <Navigate to="/login" replace />
   if (profile.role !== role) {
+    // Admins scanning a client QR land in the admin portal instead of looping on /app.
+    if (profile.role === 'admin') return <Navigate to="/admin" replace />
     // Non-admins scanning the Admin QR code land in the client portal with a notice.
     return (
       <Navigate

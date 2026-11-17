@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/Badge'
 import { useToast } from '@/components/ui/Toast'
 import { formatDateTime } from '@/lib/utils'
 import { getGymSettings, settingsErrorMessage, updateGymSettings } from './settingsApi'
+import { QrPosterCard } from './QrPosterCard'
 
 const timezones = [
   'Asia/Manila',
@@ -114,11 +115,17 @@ export function SettingsPage() {
     ? timezones
     : [...timezones, query.data?.timezone].filter(Boolean)
 
+  const siteOrigin = window.location.origin
+  const clientQrLink = (watch('client_qr_url') ?? '').trim()
+  const adminQrLink = (watch('admin_qr_url') ?? '').trim()
+  const clientPosterUrl = clientQrLink || `${siteOrigin}/checkin`
+  const adminPosterUrl = adminQrLink || `${siteOrigin}/admin/attendance`
+
   return (
     <div>
       <PageHeader
         title="Settings"
-        description="Gym timezone and optional QR links used across the portals."
+        description="Gym timezone, QR links, and printable check-in posters."
         action={<Badge tone="blue">Administrator</Badge>}
       />
 
@@ -180,8 +187,8 @@ export function SettingsPage() {
                 <Input
                   label="Client check-in QR link"
                   type="url"
-                  placeholder="https://gym.example.com/checkin"
-                  hint="Optional. Printed or shared with members alongside their check-in QR."
+                  placeholder={`${siteOrigin}/checkin`}
+                  hint="Optional. Leave blank to use this site's /checkin URL. Encoded on the client poster below."
                   error={errors.client_qr_url?.message}
                   {...register('client_qr_url')}
                 />
@@ -189,8 +196,8 @@ export function SettingsPage() {
                 <Input
                   label="Admin scanner QR link"
                   type="url"
-                  placeholder="https://gym.example.com/admin/attendance"
-                  hint="Optional. Link encoded on the front-desk scanner card."
+                  placeholder={`${siteOrigin}/admin/attendance`}
+                  hint="Optional. Leave blank to use this site's /admin/attendance URL. Encoded on the staff card below."
                   error={errors.admin_qr_url?.message}
                   {...register('admin_qr_url')}
                 />
@@ -242,6 +249,47 @@ export function SettingsPage() {
           </Card>
         </div>
       </div>
+
+      {query.data && (
+        <section className="mt-8" aria-labelledby="qr-posters-heading">
+          <div className="mb-4">
+            <h2 id="qr-posters-heading" className="text-base font-semibold text-slate-900">
+              Printable QR posters
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Print the client poster for the entrance and the staff card for the front desk. QR
+              codes encode links only — check-in is still verified against the member's account and
+              subscription.
+            </p>
+          </div>
+          <div className="grid gap-5 lg:grid-cols-2">
+            <QrPosterCard
+              title="Client check-in"
+              description="Clients scan this to open their check-in page."
+              url={clientPosterUrl}
+              isFallback={!clientQrLink}
+              fileName="gymtrack-client-check-in-qr"
+              steps={[
+                'Scan the QR code and sign in with your member account.',
+                'Tap Time in when you arrive and Time out when you leave.',
+                'Show your member QR to staff if you prefer front-desk check-in.',
+              ]}
+            />
+            <QrPosterCard
+              title="Staff scanner"
+              description="Staff scan this to open the member scanner."
+              url={adminPosterUrl}
+              isFallback={!adminQrLink}
+              fileName="gymtrack-staff-scanner-qr"
+              steps={[
+                'Sign in with an administrator account.',
+                'Tap Scan member QR and scan the member code.',
+                'The server records the visit and validates the membership.',
+              ]}
+            />
+          </div>
+        </section>
+      )}
     </div>
   )
 }
