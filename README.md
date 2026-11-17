@@ -16,7 +16,7 @@ A secure, responsive gym management application for gym owners and members.
 | 4 | Attendance, QR codes, check-in/out, admin corrections | ✅ Complete |
 | 5 | Body metrics, self-entry, progress charts | ✅ Complete |
 | 6 | Analytics, reports, CSV export | ✅ Complete |
-| 7 | Polish, mobile optimization, deployment, acceptance testing | ⏳ Next |
+| 7 | Polish, mobile optimization, deployment, acceptance testing | ✅ Complete |
 
 ---
 
@@ -50,7 +50,8 @@ Open **Supabase Dashboard → SQL Editor** and run these files **in order**:
 7. `supabase/migrations/0007_attendance.sql` — QR tokens, check-in/out RPCs, admin corrections, attendance views
 8. `supabase/migrations/0008_metrics.sql` — body metrics audit trigger + BMI directory view
 9. `supabase/migrations/0009_reports.sql` — admin analytics RPCs, period comparisons, CSV export feeds
-10. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
+10. `supabase/migrations/0010_settings_guard.sql` — timezone/QR validation and audit for gym settings
+11. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
 
 Every file is idempotent where practical and safe to re-run.
 
@@ -231,13 +232,31 @@ reset role;
    breakdowns → all three export feeds → single-day boundary filter → member RPCs blocked → reversed
    and >366-day ranges rejected. Test rows and auth users were removed afterwards.
 
+### Phase 7 acceptance
+
+1. **Settings** (`/admin/settings`): approved admins edit the gym timezone and optional client/admin
+   QR links. The form previews the timezone's current date/time, validates URLs, and shows the last
+   updated timestamp.
+2. **Settings hardening:** `gym_settings_guard` rejects blank/unknown IANA timezones and non-http(s)
+   QR links. Every settings change is written to `audit_logs`; members cannot update the row.
+3. **Polish:** route-level code splitting loads pages (and charts/QR libraries) on demand, a global
+   error boundary catches render failures, the portal has a skip-to-content link, and the mobile
+   drawer closes on Escape with a labelled modal and scroll lock.
+4. **Deployment:** `vercel.json` provides SPA rewrites, HSTS, anti-framing, MIME-sniffing, referrer,
+   and camera-only permissions headers. `public/_redirects` covers Netlify, and `robots.txt` keeps
+   the private portal out of search indexes.
+5. **Verification:** `npm run build` and `npm run lint` pass (lint warnings only, no errors). Live E2E
+   passed: member settings update ignored → admin timezone/QR update → unknown timezone, invalid URL,
+   and blank timezone rejected → valid settings intact → audit entry written → original settings
+   restored. Test user and password backup removed.
+
 ## 4. Project structure
 
 ```
 src/
   app/            routing, guards, query client
   components/ui/  reusable primitives (button, input, badge, card, feedback)
-  features/       auth, dashboard, clients, memberships, payments, attendance, metrics, profile, reports
+  features/       auth, dashboard, clients, memberships, payments, attendance, metrics, profile, reports, settings
   layouts/        auth layout, portal shell (sidebar + mobile nav)
   lib/            supabase client, env, utilities
   pages/          check-in, placeholders, 404
@@ -281,10 +300,70 @@ Defence in depth:
 - Report and export RPCs aggregate across RLS-protected tables as `SECURITY DEFINER` functions, but
   require an approved admin JWT and reject non-admin callers with `42501`. Ranges are validated and
   capped at 366 days; exports are capped at 20,000 rows.
+- `gym_settings` writes are admin-only, revalidated by a trigger against `pg_timezone_names` and
+  http(s) URL rules, and audited.
 
-## 6. Deployment (summary — full config in Phase 7)
+## 6. Deployment
 
-- Vercel: framework preset **Vite**, build `npm run build`, output `dist`
-- Environment variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (Production + Preview)
-- SPA fallback `vercel.json` rewrite lands in Phase 7
-- Add the Vercel domain to Supabase **Site URL / Redirect URLs**
+### Prerequisites
+
+- Supabase project with migrations `0001`–`0010` applied and `seed.sql` run.
+- `admin-create-client` Edge Function deployed.
+- A Vercel (or Netlify) account for the static frontend.
+
+### 1. Database and functions
+
+```bash
+supabase link --project-ref <project-ref>
+supabase db push
+supabase functions deploy admin-create-client --project-ref <project-ref>
+```
+
+Supabase provides `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` to Edge
+Functions automatically. The service-role key must never be added to frontend environment variables.
+
+### 2. Frontend environment
+
+Set these for Production and Preview in Vercel (or in the hosting provider's dashboard):
+
+```bash
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=<anon-key>
+```
+
+Vercel settings:
+
+- Framework preset: **Vite**
+- Build command: `npm run build`
+- Output directory: `dist`
+- Install command: `npm install`
+
+`vercel.json` rewrites every route to `index.html` so deep links such as `/admin/reports` work on
+refresh, and adds HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, a strict referrer
+policy, and `camera=(self)` for the QR scanner. Netlify deployments are covered by
+`public/_redirects`.
+
+### 3. Supabase Auth URLs
+
+In **Authentication → URL Configuration**:
+
+- **Site URL:** `https://<your-app>.vercel.app`
+- **Redirect URLs:** `https://<your-app>.vercel.app/login`,
+  `https://<your-app>.vercel.app/**`, and `http://localhost:5173/login` for local work.
+
+Email confirmation should remain enabled for production; approval is still a manual admin step.
+
+### 4. Post-deploy smoke test
+
+1. Sign in as the seeded admin and open `/admin/settings`; save the timezone and confirm the header
+   reflects it.
+2. Create a client via **Clients → Add client**, assign a plan, record a payment, and check them in.
+3. Open `/admin/reports`; verify KPIs, charts, and a CSV export for the current month.
+4. Sign in as the client; verify check-in, progress, profile, and that `/admin` redirects away.
+5. Confirm `/admin/reports` loads on a hard refresh (SPA fallback) and that the scanner prompt appears
+   over HTTPS.
+
+### Rollback
+
+Redeploy a previous Vercel build and, if a migration must be reverted, apply a new forward migration
+rather than editing history. Database backups remain in Supabase **Database → Backups**.

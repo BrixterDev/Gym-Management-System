@@ -32,6 +32,20 @@ export function PortalLayout({ nav, portalLabel, identityName, identityMeta }: P
     setDrawerOpen(false)
   }, [location.pathname])
 
+  useEffect(() => {
+    if (!drawerOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDrawerOpen(false)
+    }
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [drawerOpen])
+
   const handleSignOut = async () => {
     await signOut()
     navigate('/login', { replace: true })
@@ -41,6 +55,13 @@ export function PortalLayout({ nav, portalLabel, identityName, identityMeta }: P
 
   return (
     <div className="min-h-dvh bg-slate-50">
+      <a
+        href="#main-content"
+        className="sr-only z-[60] rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        Skip to content
+      </a>
+
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 bg-white lg:flex">
         <div className="flex h-16 items-center gap-2.5 border-b border-slate-100 px-5">
@@ -108,7 +129,12 @@ export function PortalLayout({ nav, portalLabel, identityName, identityMeta }: P
             className="absolute inset-0 bg-slate-900/40"
             onClick={() => setDrawerOpen(false)}
           />
-          <div className="absolute inset-y-0 right-0 flex w-72 max-w-[85%] flex-col bg-white shadow-xl">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+            className="absolute inset-y-0 right-0 flex w-72 max-w-[85%] flex-col bg-white shadow-xl"
+          >
             <div className="flex h-14 items-center justify-between border-b border-slate-100 px-4">
               <span className="text-sm font-semibold text-slate-900">Menu</span>
               <button
@@ -140,7 +166,7 @@ export function PortalLayout({ nav, portalLabel, identityName, identityMeta }: P
       )}
 
       {/* Content */}
-      <main className="lg:pl-64">
+      <main id="main-content" className="lg:pl-64">
         <div className="mx-auto w-full max-w-7xl px-4 pb-24 pt-5 sm:px-6 lg:px-8 lg:pb-12 lg:pt-8">
           <Outlet />
         </div>
