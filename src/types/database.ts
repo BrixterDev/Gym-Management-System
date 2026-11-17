@@ -237,6 +237,86 @@ export type ToggleAttendanceResult = {
   occurred_at: string
 }
 
+export type ReportSummaryRow = {
+  revenue_paid: number
+  revenue_pending: number
+  revenue_refunded: number
+  paid_payments: number
+  visits: number
+  unique_visitors: number
+  avg_visit_minutes: number | null
+  active_members: number
+  new_members: number
+  expiring_soon: number
+  prev_revenue_paid: number
+  prev_visits: number
+  prev_new_members: number
+}
+
+export type RevenueDailyRow = {
+  report_date: string
+  paid_total: number
+  pending_total: number
+  refunded_total: number
+  paid_count: number
+}
+
+export type AttendanceDailyRow = {
+  report_date: string
+  visits: number
+  unique_visitors: number
+  avg_minutes: number | null
+}
+
+export type PaymentMethodBreakdownRow = {
+  payment_method: PaymentMethod
+  payment_count: number
+  total_amount: number
+}
+
+export type PlanPerformanceRow = {
+  plan_name: string
+  new_memberships: number
+  active_members: number
+  revenue: number
+}
+
+export type PaymentExportRow = {
+  payment_date: string
+  paid_on: string
+  display_name: string | null
+  member_code: string | null
+  email: string
+  plan_name: string
+  amount: number
+  payment_method: PaymentMethod
+  payment_status: PaymentStatus
+  reference_number: string | null
+}
+
+export type AttendanceExportRow = {
+  visit_date: string
+  display_name: string | null
+  member_code: string | null
+  email: string
+  time_in: string
+  time_out: string | null
+  duration_minutes: number | null
+  visit_state: AttendanceVisitState
+  plan_name: string | null
+}
+
+export type MembershipExportRow = {
+  display_name: string | null
+  member_code: string | null
+  email: string
+  plan_name: string
+  start_date: string
+  end_date: string
+  subscription_status: SubscriptionStatus
+  price_at_assignment: number
+}
+
 export type BodyMetricsDirectoryRow = {
   id: string
   client_id: string
@@ -490,6 +570,42 @@ export interface Database {
         Returns: AttendanceRow
       }
       admin_regenerate_client_qr: { Args: { p_client_id: string }; Returns: string }
+      admin_validate_report_range: {
+        Args: { p_from: string; p_to: string }
+        Returns: undefined
+      }
+      admin_report_summary: {
+        Args: { p_from: string; p_to: string }
+        Returns: ReportSummaryRow[]
+      }
+      admin_revenue_daily: {
+        Args: { p_from: string; p_to: string }
+        Returns: RevenueDailyRow[]
+      }
+      admin_attendance_daily: {
+        Args: { p_from: string; p_to: string }
+        Returns: AttendanceDailyRow[]
+      }
+      admin_payment_method_breakdown: {
+        Args: { p_from: string; p_to: string }
+        Returns: PaymentMethodBreakdownRow[]
+      }
+      admin_plan_performance: {
+        Args: { p_from: string; p_to: string }
+        Returns: PlanPerformanceRow[]
+      }
+      admin_export_payments: {
+        Args: { p_from: string; p_to: string }
+        Returns: PaymentExportRow[]
+      }
+      admin_export_attendance: {
+        Args: { p_from: string; p_to: string }
+        Returns: AttendanceExportRow[]
+      }
+      admin_export_memberships: {
+        Args: { p_from: string; p_to: string }
+        Returns: MembershipExportRow[]
+      }
     }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>

@@ -1,10 +1,20 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, CalendarCheck, QrCode, Users } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import {
+  ArrowRight,
+  BarChart3,
+  CalendarCheck,
+  QrCode,
+  UserPlus,
+  Users,
+  Wallet,
+} from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
-import { PageHeader } from '@/components/ui/Feedback'
+import { PageHeader, Alert } from '@/components/ui/Feedback'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { Badge, AccountStatusBadge, MembershipStatusBadge } from '@/components/ui/Badge'
-import { formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
+import { getReportSummary, presetRange, reportErrorMessage } from '@/features/reports/reportsApi'
 
 const quickLinks = [
   {
@@ -20,6 +30,12 @@ const quickLinks = [
     icon: CalendarCheck,
   },
   {
+    to: '/admin/reports',
+    title: 'Reports & analytics',
+    description: 'Revenue, attendance trends, and CSV exports.',
+    icon: BarChart3,
+  },
+  {
     to: '/admin/settings',
     title: 'Settings & QR codes',
     description: 'Timezone, gym QR codes, and portal configuration.',
@@ -29,16 +45,24 @@ const quickLinks = [
 
 export function AdminDashboardPage() {
   const { profile, clientDetail } = useAuth()
+  const range = presetRange('30d')
+
+  const summaryQuery = useQuery({
+    queryKey: ['report-summary', range],
+    queryFn: () => getReportSummary(range),
+  })
+
+  const summary = summaryQuery.data
 
   return (
     <div>
       <PageHeader
         title={`Welcome back${clientDetail?.display_name ? `, ${clientDetail.display_name}` : ''}`}
-        description="Gym operations overview. Full analytics arrive in Phase 6."
+        description="Gym operations, revenue, and attendance at a glance."
         action={<Badge tone="blue">Administrator</Badge>}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader title="Your account" description="Provisioned by seed script" />
           <CardBody className="space-y-3 text-sm">
@@ -55,30 +79,70 @@ export function AdminDashboardPage() {
           </CardBody>
         </Card>
 
-        <Card className="sm:col-span-1 lg:col-span-2">
+        <Card className="lg:col-span-2">
           <CardHeader
-            title="Phase 1 — Foundation deployed"
-            description="Database, RLS, and authentication are live"
+            title="Last 30 days"
+            description="Live operational summary"
+            action={
+              <Link
+                to="/admin/reports"
+                className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-800"
+              >
+                Full reports
+                <ArrowRight className="size-3.5" aria-hidden />
+              </Link>
+            }
           />
           <CardBody>
-            <ul className="space-y-2.5 text-sm text-slate-600">
-              {[
-                'Nine tables with constraints, partial unique indexes, and updated-at triggers',
-                'Row Level Security on every application table',
-                'Admin provisioning via seed — public signup creates pending clients only',
-                'Role-based routing with a single sign-in page',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2.5">
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden />
-                  {item}
-                </li>
-              ))}
-            </ul>
+            {summaryQuery.isError ? (
+              <Alert tone="error" title="Could not load summary">
+                {reportErrorMessage(summaryQuery.error)}
+              </Alert>
+            ) : summaryQuery.isLoading || !summary ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="rounded-lg border border-slate-100 px-3 py-3">
+                    <div className="h-3 w-16 animate-pulse rounded bg-slate-100" />
+                    <div className="mt-2 h-6 w-20 animate-pulse rounded bg-slate-100" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <Stat
+                  label="Revenue"
+                  value={formatCurrency(summary.revenue_paid)}
+                  icon={<Wallet className="size-3.5" aria-hidden />}
+                />
+                <Stat
+                  label="Visits"
+                  value={String(summary.visits)}
+                  icon={<CalendarCheck className="size-3.5" aria-hidden />}
+                />
+                <Stat
+                  label="New members"
+                  value={String(summary.new_members)}
+                  icon={<UserPlus className="size-3.5" aria-hidden />}
+                />
+                <Stat
+                  label="Active members"
+                  value={String(summary.active_members)}
+                  icon={<Users className="size-3.5" aria-hidden />}
+                />
+                <p className="col-span-2 text-xs text-slate-500 sm:col-span-4">
+                  {summary.expiring_soon > 0
+                    ? `${summary.expiring_soon} membership${
+                        summary.expiring_soon === 1 ? '' : 's'
+                      } expiring within 7 days.`
+                    : 'No memberships expiring in the next 7 days.'}
+                </p>
+              </div>
+            )}
           </CardBody>
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {quickLinks.map((link) => (
           <Link
             key={link.to}
@@ -105,6 +169,26 @@ function Row({ label, value }: { label: string; value: string }) {
     <div className="flex items-center justify-between gap-3">
       <span className="text-slate-500">{label}</span>
       <span className="truncate font-medium text-slate-900">{value}</span>
+    </div>
+  )
+}
+
+function Stat({
+  label,
+  value,
+  icon,
+}: {
+  label: string
+  value: string
+  icon: React.ReactNode
+}) {
+  return (
+    <div className="rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-3">
+      <p className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
+        {icon}
+        {label}
+      </p>
+      <p className="mt-1 text-lg font-semibold text-slate-900">{value}</p>
     </div>
   )
 }

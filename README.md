@@ -15,8 +15,8 @@ A secure, responsive gym management application for gym owners and members.
 | 3 | Plans, subscriptions lifecycle, payments | ✅ Complete |
 | 4 | Attendance, QR codes, check-in/out, admin corrections | ✅ Complete |
 | 5 | Body metrics, self-entry, progress charts | ✅ Complete |
-| 6 | Analytics, reports, CSV export | ⏳ Next |
-| 7 | Polish, mobile optimization, deployment, acceptance testing | ⏳ |
+| 6 | Analytics, reports, CSV export | ✅ Complete |
+| 7 | Polish, mobile optimization, deployment, acceptance testing | ⏳ Next |
 
 ---
 
@@ -49,7 +49,8 @@ Open **Supabase Dashboard → SQL Editor** and run these files **in order**:
 6. `supabase/migrations/0006_billing_summaries.sql` — payment and subscription summary views
 7. `supabase/migrations/0007_attendance.sql` — QR tokens, check-in/out RPCs, admin corrections, attendance views
 8. `supabase/migrations/0008_metrics.sql` — body metrics audit trigger + BMI directory view
-9. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
+9. `supabase/migrations/0009_reports.sql` — admin analytics RPCs, period comparisons, CSV export feeds
+10. `supabase/seed.sql` — singleton gym settings, first admin, demo plans
 
 Every file is idempotent where practical and safe to re-run.
 
@@ -209,13 +210,34 @@ reset role;
    cross-client insert blocked → admin insert → member edit of admin row ignored → RLS scoping →
    phone update → role escalation blocked → self delete → admin delete → audit rows present.
 
+### Phase 6 acceptance
+
+1. **Reports dashboard** (`/admin/reports`): date-range controls with presets (7/30/90 days, this
+   month, last month, custom), live validation, and a 366-day maximum. The admin dashboard also shows
+   a last-30-days KPI strip.
+2. **KPIs:** collected revenue, visits, new members, and active members, with previous-period
+   comparisons and an expiring-within-7-days hint. Summary queries are admin-only.
+3. **Charts:** gap-filled daily revenue (collected vs pending), attendance (visits vs unique
+   visitors), payment-method breakdown, and a per-plan performance table.
+4. **CSV export:** payments, attendance, and memberships for the selected range. Files are UTF-8 with
+   a BOM for Excel, use quoted/escaped cells, and are capped at 20,000 rows.
+5. **Timezone correctness:** every report and export converts timestamps with
+   `gym_settings.timezone`, so a visit or payment near midnight is counted on the correct gym day.
+6. **Security:** report and export functions are `SECURITY DEFINER` with an explicit `is_admin()`
+   check, `search_path = public`, `anon` revoked, and `authenticated` grants. Members receive `403`.
+   Reversed and oversized ranges are rejected in both the UI and the database.
+7. **Verification:** `npm run build` passes. Live E2E passed: 2 memberships + 4 payments + 3 visits →
+   summary totals and previous-period values → daily series gap-fill and sums → method and plan
+   breakdowns → all three export feeds → single-day boundary filter → member RPCs blocked → reversed
+   and >366-day ranges rejected. Test rows and auth users were removed afterwards.
+
 ## 4. Project structure
 
 ```
 src/
   app/            routing, guards, query client
   components/ui/  reusable primitives (button, input, badge, card, feedback)
-  features/       auth, dashboard, clients, memberships, payments, attendance, metrics, profile (reports next)
+  features/       auth, dashboard, clients, memberships, payments, attendance, metrics, profile, reports
   layouts/        auth layout, portal shell (sidebar + mobile nav)
   lib/            supabase client, env, utilities
   pages/          check-in, placeholders, 404
@@ -256,6 +278,9 @@ Defence in depth:
 - Body metric ownership is enforced by trigger and RLS: clients can only write rows they recorded
   for themselves, `recorded_by` cannot be spoofed, and admin-recorded measurements are read-only to
   members. Metric changes are audited.
+- Report and export RPCs aggregate across RLS-protected tables as `SECURITY DEFINER` functions, but
+  require an approved admin JWT and reject non-admin callers with `42501`. Ranges are validated and
+  capped at 366 days; exports are capped at 20,000 rows.
 
 ## 6. Deployment (summary — full config in Phase 7)
 

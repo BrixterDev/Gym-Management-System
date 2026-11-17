@@ -18,6 +18,7 @@ import { AttendancePage } from '@/features/attendance/AttendancePage'
 import { ClientAttendancePage } from '@/features/attendance/ClientAttendancePage'
 import { ProgressPage } from '@/features/metrics/ProgressPage'
 import { ProfilePage } from '@/features/profile/ProfilePage'
+import { ReportsPage } from '@/features/reports/ReportsPage'
 import { ComingSoonPage, NotFoundPage } from '@/pages/PlaceholderPages'
 import { CheckInPage } from '@/pages/CheckInPage'
 
@@ -46,10 +47,7 @@ export function AppRoutes() {
             <Route path="subscriptions" element={<SubscriptionsPage />} />
             <Route path="attendance" element={<AttendancePage />} />
             <Route path="payments" element={<PaymentsPage />} />
-            <Route
-              path="reports"
-              element={<ComingSoonPage title="Reports" phase="Phase 6" />}
-            />
+            <Route path="reports" element={<ReportsPage />} />
             <Route
               path="settings"
               element={<ComingSoonPage title="Settings" phase="Phase 4" />}
