@@ -5,6 +5,7 @@ A secure, responsive gym management application for gym owners and members.
 - **Frontend:** React 19 + Vite + TypeScript (strict) + Tailwind CSS 4 + TanStack Query + Recharts
 - **Backend:** Supabase (PostgreSQL, Auth, Row Level Security, Edge Functions)
 - **Authorization:** enforced in PostgreSQL RLS and trusted `SECURITY DEFINER` functions — never in the UI alone
+- **Live:** https://gymtrack-ruddy.vercel.app (GitHub `main` deploys automatically via Vercel)
 
 ## Phase status
 
