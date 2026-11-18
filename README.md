@@ -14,6 +14,7 @@ The interface uses a dark, premium glassmorphism theme: a deep navy gradient can
 Layout notes:
 
 - No horizontal scrolling at any width from 320px up. Wide tables are replaced by card lists below `xl` (1280px); compact tables use fixed layouts with truncation.
+- Form controls share one fixed spec: 44px inputs/selects, `rounded-xl`, 16px text on mobile and 14px from `sm` up (prevents iOS focus zoom), and fixed-height, non-resizable textareas. Paired fields (including Reports `From`/`To` and password/Generate) stack to one column below `sm`.
 - Charts use dark-friendly axes, tooltips, and brighter series colors.
 - QR code surfaces stay solid white for scan reliability, and the poster print output is unchanged.
 - Reduced-motion, higher-contrast, and no-`backdrop-filter` fallbacks are supported.
@@ -191,9 +192,13 @@ reset role;
    working immediately).
 2. **Member self check-in** (`/checkin`): one tap times in or out. `/app/attendance` lists the
    member's visit history with durations, status, and pagination.
-3. **Admin scanner** (`/admin/attendance` → Scan member): camera QR scanning where the browser
-   supports `BarcodeDetector`, with manual QR-token/member-code entry as a fallback. One action
-   toggles check-in or check-out and shows the member name, code, and time.
+3. **Admin scanner** (`/admin/attendance` → Scan member): the rear camera starts automatically when
+   the dialog opens. Browsers with `BarcodeDetector` use it directly; every other browser (Windows
+   Chrome/Edge, Firefox, Safari/iOS) falls back to the bundled `jsQR` decoder, so scanning works
+   everywhere over HTTPS. Frames are decoded on-device and never uploaded. Denied permission, a
+   missing/busy camera, and insecure contexts each get a specific message plus a Retry button, and
+   manual QR-token/member-code entry is always available. One action toggles check-in or check-out
+   and shows the member name, code, and time.
 4. **Server-side eligibility:** check-in requires an approved account and a subscription that is
    `active` and within `start_date..end_date` (evaluated with `gym_today()`). Paused, cancelled,
    expired, future-dated, and non-approved accounts are rejected by the RPC, not just the UI.
@@ -263,8 +268,9 @@ reset role;
    error boundary catches render failures, the portal has a skip-to-content link, and the mobile
    drawer closes on Escape with a labelled modal and scroll lock.
 4. **Deployment:** `vercel.json` provides SPA rewrites, HSTS, anti-framing, MIME-sniffing, referrer,
-   and camera-only permissions headers. `public/_redirects` covers Netlify, and `robots.txt` keeps
-   the private portal out of search indexes.
+   and camera-only permissions headers. `public/_redirects` covers Netlify, `public/_headers` mirrors
+   the same security and permissions headers for Netlify, and `robots.txt` keeps the private portal
+   out of search indexes.
 5. **Verification:** `npm run build` and `npm run lint` pass (lint warnings only, no errors). Live E2E
    passed: member settings update ignored → admin timezone/QR update → unknown timezone, invalid URL,
    and blank timezone rejected → valid settings intact → audit entry written → original settings
@@ -361,7 +367,7 @@ Vercel settings:
 `vercel.json` rewrites every route to `index.html` so deep links such as `/admin/reports` work on
 refresh, and adds HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, a strict referrer
 policy, and `camera=(self)` for the QR scanner. Netlify deployments are covered by
-`public/_redirects`.
+`public/_redirects` and `public/_headers` (same security and camera permissions).
 
 ### 3. Supabase Auth URLs
 

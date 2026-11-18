@@ -56,7 +56,7 @@ export function DateRangeControls({
           </Select>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:w-auto">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:w-auto">
           <Input
             label="From"
             type="date"

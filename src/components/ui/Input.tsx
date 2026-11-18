@@ -36,7 +36,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
           className={cn(
-            'h-10 w-full rounded-xl border bg-white/[0.045] px-3 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors placeholder:text-slate-500',
+            'h-11 w-full min-w-0 max-w-full rounded-xl border bg-white/[0.045] px-3 text-base text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors placeholder:text-slate-500 sm:text-sm',
             'focus:border-brand-400 focus:bg-white/[0.06] focus:ring-2 focus:ring-brand-400/25 focus:outline-none',
             error
               ? 'border-rose-400/60 focus:border-rose-400 focus:ring-rose-400/25'
@@ -79,7 +79,7 @@ export function Textarea({ label, error, className, id, ...props }: TextareaProp
         id={inputId}
         aria-invalid={Boolean(error)}
         className={cn(
-          'w-full rounded-xl border border-white/10 bg-white/[0.045] px-3 py-2 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] placeholder:text-slate-500',
+          'min-h-[88px] w-full min-w-0 max-w-full resize-none rounded-xl border border-white/10 bg-white/[0.045] px-3 py-2.5 text-base text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] placeholder:text-slate-500 sm:text-sm',
           'hover:border-white/20 focus:border-brand-400 focus:bg-white/[0.06] focus:ring-2 focus:ring-brand-400/25 focus:outline-none',
           error && 'border-rose-400/60',
           className,
@@ -110,7 +110,7 @@ export function Select({ label, error, className, id, children, ...props }: Sele
         id={inputId}
         aria-invalid={Boolean(error)}
         className={cn(
-          'h-10 w-full rounded-xl border border-white/10 bg-white/[0.045] px-3 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',
+          'h-11 w-full min-w-0 max-w-full rounded-xl border border-white/10 bg-white/[0.045] px-3 text-base text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:text-sm',
           'hover:border-white/20 focus:border-brand-400 focus:bg-white/[0.06] focus:ring-2 focus:ring-brand-400/25 focus:outline-none',
           error && 'border-rose-400/60',
           className,

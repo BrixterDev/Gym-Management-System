@@ -110,8 +110,8 @@ export function CreateClientDialog({
           {...register('email')}
         />
 
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+          <div className="min-w-0 flex-1">
             <Input
               label="Temporary password"
               type="text"
@@ -123,6 +123,7 @@ export function CreateClientDialog({
           <Button
             type="button"
             variant="outline"
+            className="w-full shrink-0 sm:w-auto"
             onClick={() => setValue('password', generatePassword(), { shouldValidate: true })}
           >
             <RefreshCw className="size-3.5" aria-hidden />

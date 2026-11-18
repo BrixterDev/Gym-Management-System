@@ -112,7 +112,7 @@ export function ProfilePage() {
                   <Mail className="size-4" aria-hidden />
                   Email
                 </span>
-                <span className="truncate font-medium text-slate-100">{profile?.email ?? '—'}</span>
+                <span className="min-w-0 truncate font-medium text-slate-100">{profile?.email ?? '—'}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-slate-400">Member code</span>
