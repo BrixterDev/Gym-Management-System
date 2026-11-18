@@ -10,6 +10,7 @@ import {
   RefreshCw,
   Repeat,
   Search,
+  Wallet,
   XCircle,
 } from 'lucide-react'
 import { PageHeader, EmptyState, Alert } from '@/components/ui/Feedback'
@@ -37,6 +38,7 @@ import {
   ChangePlanDialog,
   RenewSubscriptionDialog,
 } from './SubscriptionDialogs'
+import { RecordPaymentDialog } from '@/features/payments/RecordPaymentDialog'
 
 type ConfirmAction = { type: 'pause' | 'resume' | 'cancel'; row: SubscriptionDirectoryRow }
 
@@ -47,6 +49,7 @@ export function SubscriptionsPage() {
   const [assignOpen, setAssignOpen] = useState(false)
   const [renewTarget, setRenewTarget] = useState<SubscriptionDirectoryRow | null>(null)
   const [changeTarget, setChangeTarget] = useState<SubscriptionDirectoryRow | null>(null)
+  const [paymentTarget, setPaymentTarget] = useState<SubscriptionDirectoryRow | null>(null)
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null)
   const deferredSearch = useDeferredValue(filters.search)
 
@@ -260,6 +263,7 @@ export function SubscriptionsPage() {
                           row={row}
                           onRenew={() => setRenewTarget(row)}
                           onChange={() => setChangeTarget(row)}
+                          onPayment={() => setPaymentTarget(row)}
                           onConfirm={(type) => setConfirmAction({ type, row })}
                         />
                       </td>
@@ -297,6 +301,7 @@ export function SubscriptionsPage() {
                       row={row}
                       onRenew={() => setRenewTarget(row)}
                       onChange={() => setChangeTarget(row)}
+                      onPayment={() => setPaymentTarget(row)}
                       onConfirm={(type) => setConfirmAction({ type, row })}
                     />
                   </div>
@@ -348,6 +353,12 @@ export function SubscriptionsPage() {
         open={Boolean(changeTarget)}
         onClose={() => setChangeTarget(null)}
         subscription={changeTarget}
+      />
+      <RecordPaymentDialog
+        open={Boolean(paymentTarget)}
+        onClose={() => setPaymentTarget(null)}
+        defaultSubscription={paymentTarget}
+        lockedSubscription
       />
 
       <ConfirmDialog
@@ -402,11 +413,13 @@ function SubscriptionsActions({
   row,
   onRenew,
   onChange,
+  onPayment,
   onConfirm,
 }: {
   row: SubscriptionDirectoryRow
   onRenew: () => void
   onChange: () => void
+  onPayment: () => void
   onConfirm: (type: 'pause' | 'resume' | 'cancel') => void
 }) {
   const isCancelled = row.subscription_status === 'cancelled'
@@ -414,6 +427,10 @@ function SubscriptionsActions({
 
   return (
     <div className="flex flex-wrap justify-end gap-1.5">
+      <Button variant="outline" size="sm" onClick={onPayment}>
+        <Wallet className="size-3.5" aria-hidden />
+        Payment
+      </Button>
       {!isCancelled && (
         <Button variant="outline" size="sm" onClick={onRenew}>
           <Repeat className="size-3.5" aria-hidden />

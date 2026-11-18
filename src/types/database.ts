@@ -547,8 +547,34 @@ export interface Database {
         Args: { p_client_id: string; p_plan_id: string; p_start_date?: string | null }
         Returns: MembershipRow
       }
+      admin_create_subscription_with_payment: {
+        Args: {
+          p_client_id: string
+          p_plan_id: string
+          p_start_date: string
+          p_amount: number
+          p_payment_method: PaymentMethod
+          p_payment_status: PaymentStatus
+          p_payment_date: string
+          p_reference_number?: string | null
+        }
+        Returns: MembershipRow
+      }
       admin_renew_subscription: {
         Args: { p_membership_id: string; p_plan_id?: string | null; p_start_date?: string | null }
+        Returns: MembershipRow
+      }
+      admin_renew_subscription_with_payment: {
+        Args: {
+          p_membership_id: string
+          p_plan_id: string
+          p_start_date: string
+          p_amount: number
+          p_payment_method: PaymentMethod
+          p_payment_status: PaymentStatus
+          p_payment_date: string
+          p_reference_number?: string | null
+        }
         Returns: MembershipRow
       }
       admin_pause_subscription: { Args: { p_membership_id: string }; Returns: MembershipRow }

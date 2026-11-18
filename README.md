@@ -157,13 +157,21 @@ reset role;
    subscription with paid/pending/failed/refunded status, optional reference number, date, and
    amount. Mark pending/failed payments as paid or refund paid payments. Summary cards aggregate
    totals by status. Every write is audited.
+   The subscription form also records the first payment in the same transaction: **Assign** and
+   **Renew** include an optional, on-by-default payment section prefilled with the plan price, so a
+   membership can never be created without the payment the admin submitted. Each Subscriptions row
+   has a **Payment** action that opens the record-payment dialog with that subscription locked and
+   the remaining balance prefilled.
 6. **Authorization:** plan/payment writes, and all lifecycle RPCs, require an admin and are
    re-checked server-side (`is_admin()`); a client token receives `403`. Members only see their own
    subscription/payment rows through RLS. Client-supplied statuses, prices, and dates are ignored —
    the database derives them.
 7. **Verification:** `npm run build` passes strict type-check. Lifecycle E2E tested against the live
    project: assign → duplicate blocked → pause → resume → renew → change plan → cancel → renew
-   rejected; inactive plans rejected; client reads scoped to own rows.
+   rejected; inactive plans rejected; client reads scoped to own rows. Subscription-payment E2E
+   passed against the live project: assign-with-payment and renew-with-payment create the membership
+   and exactly one payment each, a negative amount is rejected without leaving a membership behind,
+   and a client token receives `403`.
 
 ### Phase 4 acceptance
 

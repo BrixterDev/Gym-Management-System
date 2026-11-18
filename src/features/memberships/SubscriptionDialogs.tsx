@@ -1,23 +1,31 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
+import type { UseFormRegisterReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { CalendarDays, Search, X } from 'lucide-react'
+import { CalendarDays, Search, Wallet, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input, Select } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { Alert } from '@/components/ui/Feedback'
 import { useToast } from '@/components/ui/Toast'
 import { formatCurrency, formatDate, todayIsoDate } from '@/lib/utils'
-import type { SubscriptionDirectoryRow } from '@/types/database'
+import type {
+  PaymentMethod,
+  PaymentStatus,
+  SubscriptionDirectoryRow,
+} from '@/types/database'
 import { listClients } from '@/features/clients/api'
 import { listActivePlans } from './plansApi'
 import {
   assignSubscription,
+  assignSubscriptionWithPayment,
   changeSubscriptionPlan,
   renewSubscription,
+  renewSubscriptionWithPayment,
   subscriptionErrorMessage,
+  type SubscriptionPaymentInput,
 } from './subscriptionsApi'
 
 export interface PickedClient {
@@ -41,6 +49,122 @@ function invalidateBilling(queryClient: ReturnType<typeof useQueryClient>, clien
     queryClient.invalidateQueries({ queryKey: ['client', clientId] })
     queryClient.invalidateQueries({ queryKey: ['client-memberships', clientId] })
   }
+}
+
+const paymentDefaults = {
+  record_payment: true,
+  amount: '',
+  payment_date: todayIsoDate(),
+  payment_method: 'cash' as PaymentMethod,
+  payment_status: 'paid' as PaymentStatus,
+  reference_number: '',
+}
+
+type PaymentValues = {
+  record_payment: boolean
+  amount: string
+  payment_date: string
+  payment_method: PaymentMethod
+  payment_status: PaymentStatus
+  reference_number: string
+}
+
+function toPaymentInput(values: PaymentValues): SubscriptionPaymentInput | null {
+  if (!values.record_payment) return null
+  return {
+    amount: Number(values.amount),
+    payment_method: values.payment_method,
+    payment_status: values.payment_status,
+    payment_date: values.payment_date,
+    reference_number: values.reference_number.trim() || null,
+  }
+}
+
+function PaymentFields({
+  register,
+  enabled,
+  selectedPrice,
+  amount,
+  errors,
+}: {
+  register: (name: keyof PaymentValues) => UseFormRegisterReturn
+  enabled: boolean
+  selectedPrice?: number
+  amount: string
+  errors: Partial<Record<keyof PaymentValues, string | undefined>>
+}) {
+  const parsed = Number(amount)
+  const recorded = Number.isFinite(parsed) ? parsed : 0
+  const balance = selectedPrice != null ? Math.max(selectedPrice - recorded, 0) : null
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+      <label className="flex items-start gap-3">
+        <input
+          type="checkbox"
+          className="mt-0.5 size-4 rounded border-slate-300 accent-brand-600"
+          {...register('record_payment')}
+        />
+        <span>
+          <span className="flex items-center gap-1.5 text-sm font-medium text-slate-900">
+            <Wallet className="size-4 text-slate-400" aria-hidden />
+            Record payment now
+          </span>
+          <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">
+            Optional. Turn off for unpaid, trial, or comped memberships.
+          </span>
+        </span>
+      </label>
+
+      {enabled && (
+        <div className="mt-4 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input
+              label="Amount (PHP)"
+              type="number"
+              min="0"
+              step="0.01"
+              hint={selectedPrice != null ? `Plan price ${formatCurrency(selectedPrice)}` : undefined}
+              error={errors.amount}
+              {...register('amount')}
+            />
+            <Input
+              label="Payment date"
+              type="date"
+              error={errors.payment_date}
+              {...register('payment_date')}
+            />
+            <Select label="Method" error={errors.payment_method} {...register('payment_method')}>
+              <option value="cash">Cash</option>
+              <option value="gcash">GCash</option>
+              <option value="card">Card</option>
+              <option value="bank_transfer">Bank transfer</option>
+            </Select>
+            <Select label="Status" error={errors.payment_status} {...register('payment_status')}>
+              <option value="paid">Paid</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+            </Select>
+          </div>
+
+          <Input
+            label="Reference number"
+            placeholder="Optional receipt or transaction reference"
+            error={errors.reference_number}
+            {...register('reference_number')}
+          />
+
+          {selectedPrice != null && (
+            <p className="text-xs text-slate-500">
+              Recording {formatCurrency(recorded)} of {formatCurrency(selectedPrice)}
+              {balance != null && balance > 0 ? ` · ${formatCurrency(balance)} balance` : ''}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 function ClientPicker({
@@ -132,10 +256,31 @@ function ClientPicker({
   )
 }
 
-const assignSchema = z.object({
-  plan_id: z.string().min(1, 'Choose a plan'),
-  start_date: z.string().min(1, 'Choose a start date'),
-})
+const paymentFields = {
+  record_payment: z.boolean(),
+  amount: z.string().trim(),
+  payment_date: z.string(),
+  payment_method: z.enum(['cash', 'gcash', 'card', 'bank_transfer']),
+  payment_status: z.enum(['paid', 'pending', 'failed', 'refunded']),
+  reference_number: z.string().trim().max(80, 'Keep it under 80 characters'),
+}
+
+const assignSchema = z
+  .object({
+    plan_id: z.string().min(1, 'Choose a plan'),
+    start_date: z.string().min(1, 'Choose a start date'),
+    ...paymentFields,
+  })
+  .superRefine((values, ctx) => {
+    if (!values.record_payment) return
+    const amount = Number(values.amount)
+    if (!values.amount || Number.isNaN(amount) || amount < 0) {
+      ctx.addIssue({ code: 'custom', path: ['amount'], message: 'Enter a valid amount' })
+    }
+    if (!values.payment_date) {
+      ctx.addIssue({ code: 'custom', path: ['payment_date'], message: 'Choose a payment date' })
+    }
+  })
 
 type AssignValues = z.infer<typeof assignSchema>
 
@@ -166,32 +311,61 @@ export function AssignSubscriptionDialog({
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<AssignValues>({
     resolver: zodResolver(assignSchema),
-    defaultValues: { plan_id: '', start_date: todayIsoDate() },
+    defaultValues: { plan_id: '', start_date: todayIsoDate(), ...paymentDefaults },
   })
 
   useEffect(() => {
     if (!open) return
     setClient(defaultClient ?? null)
-    reset({ plan_id: defaultPlanId ?? '', start_date: todayIsoDate() })
+    reset({
+      plan_id: defaultPlanId ?? '',
+      start_date: todayIsoDate(),
+      ...paymentDefaults,
+      payment_date: todayIsoDate(),
+    })
     setFormError(null)
   }, [open, defaultClient?.id, defaultPlanId, reset])
 
   const planId = watch('plan_id')
   const startDate = watch('start_date')
+  const recordPayment = watch('record_payment')
+  const amount = watch('amount')
   const selectedPlan = plansQuery.data?.find((plan) => plan.id === planId)
+  const selectedPlanPrice = selectedPlan?.price
+
+  useEffect(() => {
+    if (!open || !recordPayment || selectedPlanPrice == null) return
+    setValue('amount', String(selectedPlanPrice), { shouldValidate: false })
+  }, [open, recordPayment, selectedPlanPrice, setValue])
 
   const mutation = useMutation({
     mutationFn: (values: AssignValues) => {
       if (!client) throw new Error('Choose a client first')
+      const payment = toPaymentInput(values)
+      if (payment) {
+        return assignSubscriptionWithPayment(
+          client.id,
+          values.plan_id,
+          values.start_date,
+          payment,
+        )
+      }
       return assignSubscription(client.id, values.plan_id, values.start_date)
     },
-    onSuccess: () => {
+    onSuccess: (_data, values) => {
       invalidateBilling(queryClient, client?.id)
       queryClient.invalidateQueries({ queryKey: ['payments'] })
-      toast.success('Subscription activated', 'The client is now a member.')
+      queryClient.invalidateQueries({ queryKey: ['payment-summary'] })
+      toast.success(
+        'Subscription activated',
+        values.record_payment
+          ? `The client is now a member and ${formatCurrency(Number(values.amount))} was recorded as ${values.payment_status}.`
+          : 'The client is now a member. No payment was recorded.',
+      )
       onClose()
     },
     onError: (error) => setFormError(subscriptionErrorMessage(error)),
@@ -263,15 +437,41 @@ export function AssignSubscriptionDialog({
             </p>
           </div>
         )}
+
+        <PaymentFields
+          register={register}
+          enabled={recordPayment}
+          selectedPrice={selectedPlan?.price}
+          amount={amount}
+          errors={{
+            amount: errors.amount?.message,
+            payment_date: errors.payment_date?.message,
+            payment_method: errors.payment_method?.message,
+            payment_status: errors.payment_status?.message,
+            reference_number: errors.reference_number?.message,
+          }}
+        />
       </form>
     </Modal>
   )
 }
 
-const renewSchema = z.object({
-  plan_id: z.string().min(1, 'Choose a plan'),
-  start_date: z.string().min(1, 'Choose a start date'),
-})
+const renewSchema = z
+  .object({
+    plan_id: z.string().min(1, 'Choose a plan'),
+    start_date: z.string().min(1, 'Choose a start date'),
+    ...paymentFields,
+  })
+  .superRefine((values, ctx) => {
+    if (!values.record_payment) return
+    const amount = Number(values.amount)
+    if (!values.amount || Number.isNaN(amount) || amount < 0) {
+      ctx.addIssue({ code: 'custom', path: ['amount'], message: 'Enter a valid amount' })
+    }
+    if (!values.payment_date) {
+      ctx.addIssue({ code: 'custom', path: ['payment_date'], message: 'Choose a payment date' })
+    }
+  })
 
 type RenewValues = z.infer<typeof renewSchema>
 
@@ -299,32 +499,62 @@ export function RenewSubscriptionDialog({
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<RenewValues>({
     resolver: zodResolver(renewSchema),
-    defaultValues: { plan_id: '', start_date: todayIsoDate() },
+    defaultValues: { plan_id: '', start_date: todayIsoDate(), ...paymentDefaults },
   })
 
   useEffect(() => {
     if (!open || !subscription) return
     const defaultStart =
       subscription.end_date >= todayIsoDate() ? addDays(subscription.end_date, 1) : todayIsoDate()
-    reset({ plan_id: subscription.plan_id, start_date: defaultStart })
+    reset({
+      plan_id: subscription.plan_id,
+      start_date: defaultStart,
+      ...paymentDefaults,
+      payment_date: todayIsoDate(),
+    })
     setFormError(null)
   }, [open, subscription, reset])
 
   const planId = watch('plan_id')
   const startDate = watch('start_date')
+  const recordPayment = watch('record_payment')
+  const amount = watch('amount')
   const selectedPlan = plansQuery.data?.find((plan) => plan.id === planId)
+  const selectedPlanPrice = selectedPlan?.price
+
+  useEffect(() => {
+    if (!open || !recordPayment || selectedPlanPrice == null) return
+    setValue('amount', String(selectedPlanPrice), { shouldValidate: false })
+  }, [open, recordPayment, selectedPlanPrice, setValue])
 
   const mutation = useMutation({
     mutationFn: (values: RenewValues) => {
       if (!subscription) throw new Error('No subscription selected')
+      const payment = toPaymentInput(values)
+      if (payment) {
+        return renewSubscriptionWithPayment(
+          subscription.id,
+          values.plan_id,
+          values.start_date,
+          payment,
+        )
+      }
       return renewSubscription(subscription.id, values.plan_id, values.start_date)
     },
-    onSuccess: () => {
+    onSuccess: (_data, values) => {
       invalidateBilling(queryClient, subscription?.client_id)
-      toast.success('Subscription renewed')
+      queryClient.invalidateQueries({ queryKey: ['payments'] })
+      queryClient.invalidateQueries({ queryKey: ['payment-summary'] })
+      toast.success(
+        'Subscription renewed',
+        values.record_payment
+          ? `${formatCurrency(Number(values.amount))} was recorded as ${values.payment_status}.`
+          : 'No payment was recorded.',
+      )
       onClose()
     },
     onError: (error) => setFormError(subscriptionErrorMessage(error)),
@@ -384,6 +614,20 @@ export function RenewSubscriptionDialog({
             <p className="mt-1 text-xs text-brand-700">{formatCurrency(selectedPlan.price)}</p>
           </div>
         )}
+
+        <PaymentFields
+          register={register}
+          enabled={recordPayment}
+          selectedPrice={selectedPlan?.price}
+          amount={amount}
+          errors={{
+            amount: errors.amount?.message,
+            payment_date: errors.payment_date?.message,
+            payment_method: errors.payment_method?.message,
+            payment_status: errors.payment_status?.message,
+            reference_number: errors.reference_number?.message,
+          }}
+        />
       </form>
     </Modal>
   )

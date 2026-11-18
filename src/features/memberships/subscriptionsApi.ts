@@ -1,5 +1,10 @@
 import { supabase } from '@/lib/supabase'
-import type { SubscriptionDirectoryRow, SubscriptionStatus } from '@/types/database'
+import type {
+  PaymentMethod,
+  PaymentStatus,
+  SubscriptionDirectoryRow,
+  SubscriptionStatus,
+} from '@/types/database'
 
 export interface SubscriptionFilters {
   search: string
@@ -62,6 +67,34 @@ export async function assignSubscription(clientId: string, planId: string, start
   return data
 }
 
+export interface SubscriptionPaymentInput {
+  amount: number
+  payment_method: PaymentMethod
+  payment_status: PaymentStatus
+  payment_date: string
+  reference_number: string | null
+}
+
+export async function assignSubscriptionWithPayment(
+  clientId: string,
+  planId: string,
+  startDate: string,
+  payment: SubscriptionPaymentInput,
+) {
+  const { data, error } = await supabase.rpc('admin_create_subscription_with_payment', {
+    p_client_id: clientId,
+    p_plan_id: planId,
+    p_start_date: startDate,
+    p_amount: payment.amount,
+    p_payment_method: payment.payment_method,
+    p_payment_status: payment.payment_status,
+    p_payment_date: payment.payment_date,
+    p_reference_number: payment.reference_number,
+  })
+  if (error) throw error
+  return data
+}
+
 export async function renewSubscription(
   membershipId: string,
   planId: string,
@@ -71,6 +104,26 @@ export async function renewSubscription(
     p_membership_id: membershipId,
     p_plan_id: planId,
     p_start_date: startDate,
+  })
+  if (error) throw error
+  return data
+}
+
+export async function renewSubscriptionWithPayment(
+  membershipId: string,
+  planId: string,
+  startDate: string,
+  payment: SubscriptionPaymentInput,
+) {
+  const { data, error } = await supabase.rpc('admin_renew_subscription_with_payment', {
+    p_membership_id: membershipId,
+    p_plan_id: planId,
+    p_start_date: startDate,
+    p_amount: payment.amount,
+    p_payment_method: payment.payment_method,
+    p_payment_status: payment.payment_status,
+    p_payment_date: payment.payment_date,
+    p_reference_number: payment.reference_number,
   })
   if (error) throw error
   return data

@@ -32,9 +32,11 @@ type FormValues = z.infer<typeof schema>
 function SubscriptionPicker({
   selected,
   onSelect,
+  locked = false,
 }: {
   selected: SubscriptionDirectoryRow | null
   onSelect: (row: SubscriptionDirectoryRow | null) => void
+  locked?: boolean
 }) {
   const [term, setTerm] = useState('')
   const deferred = useDeferredValue(term)
@@ -61,14 +63,16 @@ function SubscriptionPicker({
             </div>
             <div className="flex shrink-0 items-center gap-1">
               <SubscriptionStatusBadge status={selected.subscription_status} />
-              <button
-                type="button"
-                onClick={() => onSelect(null)}
-                className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200"
-                aria-label="Clear subscription"
-              >
-                <X className="size-3.5" aria-hidden />
-              </button>
+              {!locked && (
+                <button
+                  type="button"
+                  onClick={() => onSelect(null)}
+                  className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200"
+                  aria-label="Clear subscription"
+                >
+                  <X className="size-3.5" aria-hidden />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -124,9 +128,13 @@ function SubscriptionPicker({
 export function RecordPaymentDialog({
   open,
   onClose,
+  defaultSubscription,
+  lockedSubscription = false,
 }: {
   open: boolean
   onClose: () => void
+  defaultSubscription?: SubscriptionDirectoryRow | null
+  lockedSubscription?: boolean
 }) {
   const toast = useToast()
   const queryClient = useQueryClient()
@@ -152,20 +160,31 @@ export function RecordPaymentDialog({
 
   useEffect(() => {
     if (!open) return
+    const remaining = defaultSubscription
+      ? Math.max(
+          defaultSubscription.plan_price -
+            defaultSubscription.paid_amount -
+            defaultSubscription.pending_amount,
+          0,
+        )
+      : 0
     reset({
-      amount: '',
+      amount: defaultSubscription && remaining > 0 ? String(remaining) : '',
       payment_method: 'cash',
       payment_status: 'paid',
       payment_date: todayIsoDate(),
       reference_number: '',
     })
-    setSubscription(null)
+    setSubscription(defaultSubscription ?? null)
     setFormError(null)
-  }, [open, reset])
+  }, [open, defaultSubscription, reset])
 
   const handleSelect = (row: SubscriptionDirectoryRow | null) => {
     setSubscription(row)
-    if (row) setValue('amount', String(row.plan_price))
+    if (row) {
+      const remaining = Math.max(row.plan_price - row.paid_amount - row.pending_amount, 0)
+      setValue('amount', remaining > 0 ? String(remaining) : String(row.plan_price))
+    }
   }
 
   const mutation = useMutation({
@@ -184,6 +203,7 @@ export function RecordPaymentDialog({
       queryClient.invalidateQueries({ queryKey: ['payments'] })
       queryClient.invalidateQueries({ queryKey: ['payment-summary'] })
       queryClient.invalidateQueries({ queryKey: ['subscriptions'] })
+      queryClient.invalidateQueries({ queryKey: ['subscription-summary'] })
       queryClient.invalidateQueries({ queryKey: ['client-memberships', subscription?.client_id] })
       toast.success('Payment recorded')
       onClose()
@@ -218,7 +238,11 @@ export function RecordPaymentDialog({
       >
         {formError && <Alert tone="error">{formError}</Alert>}
 
-        <SubscriptionPicker selected={subscription} onSelect={handleSelect} />
+        <SubscriptionPicker
+          selected={subscription}
+          onSelect={handleSelect}
+          locked={lockedSubscription}
+        />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Input
@@ -258,8 +282,9 @@ export function RecordPaymentDialog({
 
         {subscription && (
           <p className="text-xs text-slate-500">
-            Current plan price: {formatCurrency(subscription.plan_price)} · already paid{' '}
-            {formatCurrency(subscription.paid_amount)}
+            Plan price {formatCurrency(subscription.plan_price)} · paid{' '}
+            {formatCurrency(subscription.paid_amount)} · pending{' '}
+            {formatCurrency(subscription.pending_amount)}
           </p>
         )}
       </form>
