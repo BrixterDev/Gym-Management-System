@@ -9,12 +9,12 @@ import { cn } from '@/lib/utils'
 type BadgeTone = 'green' | 'amber' | 'red' | 'slate' | 'blue' | 'violet'
 
 const tones: Record<BadgeTone, string> = {
-  green: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
-  amber: 'bg-amber-50 text-amber-700 ring-amber-600/20',
-  red: 'bg-rose-50 text-rose-700 ring-rose-600/20',
-  slate: 'bg-slate-100 text-slate-600 ring-slate-500/20',
-  blue: 'bg-brand-50 text-brand-700 ring-brand-600/20',
-  violet: 'bg-violet-50 text-violet-700 ring-violet-600/20',
+  green: 'bg-emerald-500/15 text-emerald-300 ring-emerald-400/25',
+  amber: 'bg-amber-500/15 text-amber-300 ring-amber-400/25',
+  red: 'bg-rose-500/15 text-rose-300 ring-rose-400/25',
+  slate: 'bg-white/[0.07] text-slate-300 ring-white/15',
+  blue: 'bg-brand-500/15 text-brand-300 ring-brand-400/25',
+  violet: 'bg-violet-500/15 text-violet-300 ring-violet-400/25',
 }
 
 export function Badge({

@@ -58,19 +58,19 @@ export function MembershipPlansPage() {
         <Card>
           <CardBody className="py-4">
             <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Active plans</p>
-            <p className="mt-1 text-2xl font-semibold text-slate-900">{activePlans.length}</p>
+            <p className="mt-1 text-2xl font-semibold text-slate-100">{activePlans.length}</p>
           </CardBody>
         </Card>
         <Card>
           <CardBody className="py-4">
             <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Total plans</p>
-            <p className="mt-1 text-2xl font-semibold text-slate-900">{plans.length}</p>
+            <p className="mt-1 text-2xl font-semibold text-slate-100">{plans.length}</p>
           </CardBody>
         </Card>
         <Card className="col-span-2 sm:col-span-1">
           <CardBody className="py-4">
             <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Live subscribers</p>
-            <p className="mt-1 text-2xl font-semibold text-slate-900">{liveSubscribers}</p>
+            <p className="mt-1 text-2xl font-semibold text-slate-100">{liveSubscribers}</p>
           </CardBody>
         </Card>
       </div>
@@ -80,9 +80,9 @@ export function MembershipPlansPage() {
           {Array.from({ length: 3 }).map((_, index) => (
             <Card key={index}>
               <CardBody className="space-y-3">
-                <div className="h-4 w-24 animate-pulse rounded bg-slate-100" />
-                <div className="h-3 w-40 animate-pulse rounded bg-slate-50" />
-                <div className="h-8 w-20 animate-pulse rounded bg-slate-100" />
+                <div className="h-4 w-24 animate-pulse rounded bg-white/[0.06]" />
+                <div className="h-3 w-40 animate-pulse rounded bg-white/[0.03]" />
+                <div className="h-8 w-20 animate-pulse rounded bg-white/[0.06]" />
               </CardBody>
             </Card>
           ))}
@@ -112,7 +112,7 @@ export function MembershipPlansPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
-            <Card key={plan.id} className={plan.is_active ? '' : 'bg-slate-50/70'}>
+            <Card key={plan.id} className={plan.is_active ? '' : 'bg-white/[0.05]'}>
               <CardHeader
                 title={plan.name}
                 description={pluralize(plan.duration_days, 'day')}
@@ -123,15 +123,15 @@ export function MembershipPlansPage() {
                 }
               />
               <CardBody>
-                <p className="text-2xl font-semibold tracking-tight text-slate-900">
+                <p className="text-2xl font-semibold tracking-tight text-slate-100">
                   {formatCurrency(plan.price)}
                 </p>
                 {plan.description && (
-                  <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-slate-500">
+                  <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-slate-400">
                     {plan.description}
                   </p>
                 )}
-                <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-500">
+                <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
                   <Users className="size-3.5" aria-hidden />
                   {pluralize(plan.live_subscribers, 'active subscriber')}
                   <span className="text-slate-300">•</span>
@@ -166,7 +166,7 @@ export function MembershipPlansPage() {
         </div>
       )}
 
-      <p className="mt-4 text-xs leading-relaxed text-slate-500">
+      <p className="mt-4 text-xs leading-relaxed text-slate-400">
         Plans referenced by subscriptions cannot be deleted — the database restricts it. Deactivate
         a plan to stop new enrollments while keeping membership history intact.
       </p>

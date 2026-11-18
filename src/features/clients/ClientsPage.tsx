@@ -74,8 +74,8 @@ export function ClientsPage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-3 border-b border-slate-100 p-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="glass-panel rounded-2xl">
+        <div className="grid gap-3 border-b border-white/[0.07] p-4 sm:grid-cols-2 xl:grid-cols-4">
           <Input
             type="search"
             placeholder="Search name, email, or member code"
@@ -123,13 +123,13 @@ export function ClientsPage() {
         </div>
 
         {query.isLoading ? (
-          <div className="divide-y divide-slate-100" aria-busy="true">
+          <div className="divide-y divide-white/[0.07]" aria-busy="true">
             {Array.from({ length: 5 }).map((_, index) => (
               <div key={index} className="flex items-center gap-3 px-4 py-4">
-                <div className="size-10 animate-pulse rounded-full bg-slate-100" />
+                <div className="size-10 animate-pulse rounded-full bg-white/[0.06]" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-3 w-40 animate-pulse rounded bg-slate-100" />
-                  <div className="h-3 w-56 animate-pulse rounded bg-slate-50" />
+                  <div className="h-3 w-40 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-3 w-56 animate-pulse rounded bg-white/[0.03]" />
                 </div>
               </div>
             ))}
@@ -159,10 +159,10 @@ export function ClientsPage() {
         ) : (
           <>
             {/* Desktop table */}
-            <div className="hidden overflow-x-auto md:block">
+            <div className="hidden min-w-0 xl:block">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400">
+                  <tr className="border-b border-white/[0.07] text-xs uppercase tracking-wide text-slate-400">
                     <th scope="col" className="px-4 py-3 font-medium">Client</th>
                     <th scope="col" className="px-4 py-3 font-medium">Member code</th>
                     <th scope="col" className="px-4 py-3 font-medium">Account</th>
@@ -171,23 +171,23 @@ export function ClientsPage() {
                     <th scope="col" className="px-4 py-3" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/[0.07]">
                   {rows.map((client) => (
-                    <tr key={client.id} className="group transition-colors hover:bg-slate-50">
+                    <tr key={client.id} className="group transition-colors hover:bg-white/[0.04]">
                       <td className="px-4 py-3">
                         <Link to={`/admin/clients/${client.id}`} className="flex items-center gap-3">
                           <ClientAvatar name={client.display_name} email={client.email} />
                           <span className="min-w-0">
-                            <span className="block truncate font-medium text-slate-900">
+                            <span className="block truncate font-medium text-slate-100">
                               {client.display_name ?? 'Unnamed member'}
                             </span>
-                            <span className="block truncate text-xs text-slate-500">{client.email}</span>
+                            <span className="block truncate text-xs text-slate-400">{client.email}</span>
                           </span>
                         </Link>
                       </td>
                       <td className="px-4 py-3">
                         {client.member_code ? (
-                          <span className="font-mono text-xs text-slate-600">{client.member_code}</span>
+                          <span className="font-mono text-xs text-slate-300">{client.member_code}</span>
                         ) : (
                           <span className="text-xs text-slate-400">Not assigned</span>
                         )}
@@ -198,12 +198,12 @@ export function ClientsPage() {
                       <td className="px-4 py-3">
                         <MembershipStatusBadge status={client.membership_status} />
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-500">{formatDate(client.created_at)}</td>
+                      <td className="px-4 py-3 text-xs text-slate-400">{formatDate(client.created_at)}</td>
                       <td className="px-4 py-3 text-right">
                         <Link
                           to={`/admin/clients/${client.id}`}
                           aria-label={`Open ${client.display_name ?? client.email}`}
-                          className="inline-flex size-8 items-center justify-center rounded-lg text-slate-400 group-hover:text-slate-600"
+                          className="inline-flex size-8 items-center justify-center rounded-lg text-slate-400 group-hover:text-slate-200"
                         >
                           <ChevronRow className="size-4" aria-hidden />
                         </Link>
@@ -215,22 +215,22 @@ export function ClientsPage() {
             </div>
 
             {/* Mobile cards */}
-            <ul className="divide-y divide-slate-100 md:hidden">
+            <ul className="divide-y divide-white/[0.07] xl:hidden">
               {rows.map((client) => (
                 <li key={client.id}>
                   <Link
                     to={`/admin/clients/${client.id}`}
-                    className="flex items-start gap-3 px-4 py-4 active:bg-slate-50"
+                    className="flex items-start gap-3 px-4 py-4 active:bg-white/[0.03]"
                   >
                     <ClientAvatar name={client.display_name} email={client.email} />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-medium text-slate-900">
+                        <span className="truncate text-sm font-medium text-slate-100">
                           {client.display_name ?? 'Unnamed member'}
                         </span>
                         <ChevronRow className="size-4 shrink-0 text-slate-400" aria-hidden />
                       </span>
-                      <span className="mt-0.5 block truncate text-xs text-slate-500">{client.email}</span>
+                      <span className="mt-0.5 block truncate text-xs text-slate-400">{client.email}</span>
                       <span className="mt-2 flex flex-wrap items-center gap-1.5">
                         <AccountStatusBadge status={client.account_status} />
                         <MembershipStatusBadge status={client.membership_status} />
@@ -247,10 +247,10 @@ export function ClientsPage() {
         )}
 
         {rows.length > 0 && (
-          <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-slate-500">
-              Showing <span className="font-medium text-slate-700">{rows.length}</span> of{' '}
-              <span className="font-medium text-slate-700">{count}</span> clients
+          <div className="flex flex-col gap-3 border-t border-white/[0.07] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-slate-400">
+              Showing <span className="font-medium text-slate-300">{rows.length}</span> of{' '}
+              <span className="font-medium text-slate-300">{count}</span> clients
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -262,7 +262,7 @@ export function ClientsPage() {
                 <ChevronLeft className="size-3.5" aria-hidden />
                 Previous
               </Button>
-              <span className="text-xs text-slate-500">
+              <span className="whitespace-nowrap text-xs text-slate-400">
                 Page {filters.page} of {totalPages}
               </span>
               <Button

@@ -7,6 +7,17 @@ A secure, responsive gym management application for gym owners and members.
 - **Authorization:** enforced in PostgreSQL RLS and trusted `SECURITY DEFINER` functions — never in the UI alone
 - **Live:** https://functional-fitness-gym-five.vercel.app (GitHub `main` deploys automatically via Vercel)
 
+## UI
+
+The interface uses a dark, premium glassmorphism theme: a deep navy gradient canvas with subtle aurora accents, frosted translucent panels, and light typography. Shared primitives (`Card`, `Button`, `Input`, `Modal`, `Badge`, `Toast`) and the portal/auth shells implement the look, with glass utilities defined in `src/index.css`.
+
+Layout notes:
+
+- No horizontal scrolling at any width from 320px up. Wide tables are replaced by card lists below `xl` (1280px); compact tables use fixed layouts with truncation.
+- Charts use dark-friendly axes, tooltips, and brighter series colors.
+- QR code surfaces stay solid white for scan reliability, and the poster print output is unchanged.
+- Reduced-motion, higher-contrast, and no-`backdrop-filter` fallbacks are supported.
+
 ## Phase status
 
 | Phase | Scope | Status |

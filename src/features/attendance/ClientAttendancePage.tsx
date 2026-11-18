@@ -86,7 +86,7 @@ export function ClientAttendancePage() {
               <CalendarDays className="size-4" aria-hidden />
               Total visits
             </p>
-            <p className="mt-1 text-2xl font-semibold text-slate-900">{count}</p>
+            <p className="mt-1 text-2xl font-semibold text-slate-100">{count}</p>
           </CardBody>
         </Card>
         <Card>
@@ -95,7 +95,7 @@ export function ClientAttendancePage() {
               <Clock className="size-4" aria-hidden />
               This month
             </p>
-            <p className="mt-1 text-2xl font-semibold text-slate-900">
+            <p className="mt-1 text-2xl font-semibold text-slate-100">
               {monthQuery.isLoading ? '…' : (monthQuery.data ?? 0)}
             </p>
           </CardBody>
@@ -105,11 +105,11 @@ export function ClientAttendancePage() {
             <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
               Last visit
             </p>
-            <p className="mt-1 text-sm font-semibold text-slate-900">
+            <p className="mt-1 text-sm font-semibold text-slate-100">
               {lastVisit ? formatDateTimeIn(lastVisit.time_in, timeZone) : '—'}
             </p>
             {lastVisit && (
-              <p className="mt-0.5 text-xs text-slate-500">
+              <p className="mt-0.5 text-xs text-slate-400">
                 {lastVisit.time_out
                   ? formatDuration(
                       Math.round(
@@ -133,11 +133,11 @@ export function ClientAttendancePage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="glass-panel rounded-2xl">
         {query.isLoading ? (
           <div className="space-y-3 p-4" aria-busy="true">
             {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="h-14 animate-pulse rounded-lg bg-slate-50" />
+              <div key={index} className="h-14 animate-pulse rounded-lg bg-white/[0.03]" />
             ))}
           </div>
         ) : rows.length === 0 ? (
@@ -156,10 +156,10 @@ export function ClientAttendancePage() {
           />
         ) : (
           <>
-            <div className="hidden overflow-x-auto sm:block">
+            <div className="hidden min-w-0 sm:block">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400">
+                  <tr className="border-b border-white/[0.07] text-xs uppercase tracking-wide text-slate-400">
                     <th scope="col" className="px-4 py-3 font-medium">Date</th>
                     <th scope="col" className="px-4 py-3 font-medium">Time in</th>
                     <th scope="col" className="px-4 py-3 font-medium">Time out</th>
@@ -167,17 +167,17 @@ export function ClientAttendancePage() {
                     <th scope="col" className="px-4 py-3 font-medium">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/[0.07]">
                   {rows.map((visit) => (
-                    <tr key={visit.id} className="hover:bg-slate-50/60">
-                      <td className="px-4 py-3 text-slate-800">{formatDate(visit.time_in)}</td>
-                      <td className="px-4 py-3 text-xs text-slate-600">
+                    <tr key={visit.id} className="hover:bg-white/[0.04]">
+                      <td className="px-4 py-3 text-slate-200">{formatDate(visit.time_in)}</td>
+                      <td className="px-4 py-3 text-xs text-slate-300">
                         {formatTimeIn(visit.time_in, timeZone)}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600">
+                      <td className="px-4 py-3 text-xs text-slate-300">
                         {visit.time_out ? formatTimeIn(visit.time_out, timeZone) : '—'}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600">
+                      <td className="px-4 py-3 text-xs text-slate-300">
                         {formatDuration(
                           visit.time_out
                             ? Math.round(
@@ -197,14 +197,14 @@ export function ClientAttendancePage() {
               </table>
             </div>
 
-            <ul className="divide-y divide-slate-100 sm:hidden">
+            <ul className="divide-y divide-white/[0.07] sm:hidden">
               {rows.map((visit) => (
                 <li key={visit.id} className="flex items-start justify-between gap-3 p-4">
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium text-slate-100">
                       {formatDate(visit.time_in)}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-400">
                       {formatTimeIn(visit.time_in, timeZone)} →{' '}
                       {visit.time_out ? formatTimeIn(visit.time_out, timeZone) : 'open'}
                     </p>
@@ -217,8 +217,8 @@ export function ClientAttendancePage() {
         )}
 
         {rows.length > 0 && (
-          <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3">
-            <p className="text-xs text-slate-500">{pluralize(count, 'visit')}</p>
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-white/[0.07] px-4 py-3">
+            <p className="text-xs text-slate-400">{pluralize(count, 'visit')}</p>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -229,7 +229,7 @@ export function ClientAttendancePage() {
                 <ChevronLeft className="size-3.5" aria-hidden />
                 Previous
               </Button>
-              <span className="text-xs text-slate-500">
+              <span className="whitespace-nowrap text-xs text-slate-400">
                 Page {page} of {totalPages}
               </span>
               <Button
@@ -246,7 +246,7 @@ export function ClientAttendancePage() {
         )}
       </div>
 
-      <p className="mt-4 text-xs leading-relaxed text-slate-500">
+      <p className="mt-4 text-xs leading-relaxed text-slate-400">
         Times are recorded by the server. Ask the gym admin if a visit needs correcting.
       </p>
     </div>

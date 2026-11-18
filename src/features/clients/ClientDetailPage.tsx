@@ -157,9 +157,9 @@ export function ClientDetailPage() {
   if (clientQuery.isLoading) {
     return (
       <div className="space-y-4" aria-busy="true">
-        <div className="h-6 w-40 animate-pulse rounded bg-slate-200" />
-        <div className="h-32 animate-pulse rounded-xl bg-white" />
-        <div className="h-64 animate-pulse rounded-xl bg-white" />
+        <div className="h-6 w-40 animate-pulse rounded bg-white/10" />
+        <div className="h-32 animate-pulse rounded-2xl bg-white/[0.04]" />
+        <div className="h-64 animate-pulse rounded-2xl bg-white/[0.04]" />
       </div>
     )
   }
@@ -184,7 +184,7 @@ export function ClientDetailPage() {
               action={
                 <Link
                   to="/admin/clients"
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  className="inline-flex h-9 items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 text-sm font-medium text-slate-200 transition-colors hover:bg-white/10"
                 >
                   <ArrowLeft className="size-4" aria-hidden />
                   Back to clients
@@ -207,7 +207,7 @@ export function ClientDetailPage() {
     <div>
       <Link
         to="/admin/clients"
-        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800"
+        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-slate-100"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Clients
@@ -218,10 +218,10 @@ export function ClientDetailPage() {
           <div className="flex min-w-0 items-start gap-4">
             <ClientAvatar name={client.display_name} email={client.email} size="lg" />
             <div className="min-w-0">
-              <h1 className="truncate text-xl font-semibold tracking-tight text-slate-900">
+              <h1 className="truncate text-xl font-semibold tracking-tight text-slate-100">
                 {client.display_name ?? 'Unnamed member'}
               </h1>
-              <p className="mt-0.5 flex items-center gap-1.5 truncate text-sm text-slate-500">
+              <p className="mt-0.5 flex items-center gap-1.5 truncate text-sm text-slate-400">
                 <Mail className="size-3.5 shrink-0" aria-hidden />
                 {client.email}
               </p>
@@ -229,7 +229,7 @@ export function ClientDetailPage() {
                 <AccountStatusBadge status={client.account_status} />
                 <MembershipStatusBadge status={client.membership_status} />
                 {client.member_code && (
-                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 font-mono text-xs text-slate-600">
+                  <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 font-mono text-xs text-slate-300">
                     {client.member_code}
                   </span>
                 )}
@@ -240,7 +240,7 @@ export function ClientDetailPage() {
         </CardBody>
       </Card>
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-5 xl:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
           <Card>
             <CardHeader
@@ -354,8 +354,8 @@ export function ClientDetailPage() {
             <CardBody className="p-0">
               {membershipsQuery.isLoading ? (
                 <div className="space-y-2 p-5">
-                  <div className="h-4 w-40 animate-pulse rounded bg-slate-100" />
-                  <div className="h-4 w-56 animate-pulse rounded bg-slate-50" />
+                  <div className="h-4 w-40 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-4 w-56 animate-pulse rounded bg-white/[0.03]" />
                 </div>
               ) : memberships.length === 0 ? (
                 <EmptyState
@@ -369,17 +369,17 @@ export function ClientDetailPage() {
                   }
                 />
               ) : (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-white/[0.07]">
                   {memberships.map((membership) => (
                     <li
                       key={membership.id}
                       className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div>
-                        <p className="text-sm font-medium text-slate-900">
+                        <p className="text-sm font-medium text-slate-100">
                           {membership.plan?.name ?? 'Plan removed'}
                         </p>
-                        <p className="mt-0.5 text-xs text-slate-500">
+                        <p className="mt-0.5 text-xs text-slate-400">
                           {formatDate(membership.start_date)} → {formatDate(membership.end_date)}
                         </p>
                       </div>
@@ -412,8 +412,8 @@ export function ClientDetailPage() {
             <CardBody className="p-0">
               {metricsQuery.isLoading ? (
                 <div className="space-y-2 p-5">
-                  <div className="h-4 w-40 animate-pulse rounded bg-slate-100" />
-                  <div className="h-4 w-52 animate-pulse rounded bg-slate-50" />
+                  <div className="h-4 w-40 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-4 w-52 animate-pulse rounded bg-white/[0.03]" />
                 </div>
               ) : metrics.length === 0 ? (
                 <EmptyState
@@ -433,17 +433,17 @@ export function ClientDetailPage() {
                   }
                 />
               ) : (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-white/[0.07]">
                   {metrics.slice(0, 6).map((metric) => (
                     <li
                       key={metric.id}
                       className="flex items-center justify-between gap-3 px-5 py-3"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-slate-900">
+                        <p className="text-sm font-medium text-slate-100">
                           {formatDate(metric.measured_at)}
                         </p>
-                        <p className="mt-0.5 text-xs text-slate-500">
+                        <p className="mt-0.5 text-xs text-slate-400">
                           {metric.weight_kg != null ? `${metric.weight_kg} kg` : '—'} ·{' '}
                           {metric.waist_cm != null ? `${metric.waist_cm} cm waist` : 'no waist'}
                           {metric.bmi != null ? ` · BMI ${metric.bmi}` : ''}
@@ -478,7 +478,7 @@ export function ClientDetailPage() {
             <CardBody className="text-center">
               {client.qr_token ? (
                 <>
-                  <div className="mx-auto inline-flex rounded-xl border border-slate-200 bg-white p-3">
+                  <div className="mx-auto inline-flex rounded-xl border border-white/10 bg-white p-3">
                     <QRCodeSVG
                       value={client.qr_token}
                       size={148}
@@ -487,12 +487,12 @@ export function ClientDetailPage() {
                       title={`QR code for ${client.display_name ?? client.email}`}
                     />
                   </div>
-                  <p className="mt-2 break-all font-mono text-[11px] text-slate-500">
+                  <p className="mt-2 break-all font-mono text-[11px] text-slate-400">
                     {client.qr_token}
                   </p>
                 </>
               ) : (
-                <p className="py-6 text-sm text-slate-500">QR code is not available yet.</p>
+                <p className="py-6 text-sm text-slate-400">QR code is not available yet.</p>
               )}
               <Button
                 variant="outline"
@@ -512,26 +512,26 @@ export function ClientDetailPage() {
             <CardHeader title="Account" />
             <CardBody className="space-y-3 text-sm">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Account status</span>
+                <span className="text-slate-400">Account status</span>
                 <AccountStatusBadge status={client.account_status} />
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Membership</span>
+                <span className="text-slate-400">Membership</span>
                 <MembershipStatusBadge status={client.membership_status} />
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Role</span>
-                <span className="font-medium capitalize text-slate-900">{client.role}</span>
+                <span className="text-slate-400">Role</span>
+                <span className="font-medium capitalize text-slate-100">{client.role}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Registered</span>
-                <span className="text-right font-medium text-slate-900">
+                <span className="text-slate-400">Registered</span>
+                <span className="text-right font-medium text-slate-100">
                   {formatDate(client.created_at)}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Details updated</span>
-                <span className="text-right text-xs text-slate-600">
+                <span className="text-slate-400">Details updated</span>
+                <span className="text-right text-xs text-slate-300">
                   {client.detail_updated_at ? formatDateTime(client.detail_updated_at) : '—'}
                 </span>
               </div>
@@ -541,10 +541,10 @@ export function ClientDetailPage() {
           <Card>
             <CardHeader title="Email address" description="Read-only for the member" />
             <CardBody>
-              <p className="break-all rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
+              <p className="break-all rounded-lg bg-white/[0.03] px-3 py-2 text-sm text-slate-300">
                 {client.email}
               </p>
-              <p className="mt-2 text-xs leading-relaxed text-slate-500">
+              <p className="mt-2 text-xs leading-relaxed text-slate-400">
                 Members cannot change their own email. Email changes must be handled by an
                 administrator through Supabase Authentication.
               </p>
@@ -556,13 +556,13 @@ export function ClientDetailPage() {
             <CardBody className="space-y-2.5 text-sm">
               <Link
                 to="/admin/attendance"
-                className="flex items-center gap-2.5 text-slate-600 hover:text-brand-700"
+                className="flex items-center gap-2.5 text-slate-300 hover:text-brand-200"
               >
                 <CalendarCheck className="size-4 text-slate-400" aria-hidden />
                 <span>Attendance history</span>
                 <span className="ml-auto text-xs text-slate-400">Open</span>
               </Link>
-              <div className="flex items-center gap-2.5 text-slate-600">
+              <div className="flex items-center gap-2.5 text-slate-300">
                 <TrendingUp className="size-4 text-slate-400" aria-hidden />
                 <span>Body metrics</span>
                 <span className="ml-auto text-xs text-slate-400">Shown above</span>

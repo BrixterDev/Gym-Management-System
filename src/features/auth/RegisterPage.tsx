@@ -53,11 +53,11 @@ export function RegisterPage() {
   if (submitted) {
     return (
       <div className="text-center">
-        <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+        <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
           <CheckCircle2 className="size-6" aria-hidden />
         </span>
-        <h1 className="mt-5 text-xl font-semibold text-slate-900">Registration received</h1>
-        <p className="mt-2 text-sm leading-relaxed text-slate-500">
+        <h1 className="mt-5 text-xl font-semibold text-slate-100">Registration received</h1>
+        <p className="mt-2 text-sm leading-relaxed text-slate-400">
           Your account is pending admin approval. You'll be able to check in and view your progress
           once the gym approves your account. If email confirmation is enabled, confirm your email
           first, then sign in to view your status.
@@ -71,8 +71,8 @@ export function RegisterPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Create your account</h1>
-      <p className="mt-1.5 text-sm text-slate-500">
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-100">Create your account</h1>
+      <p className="mt-1.5 text-sm text-slate-400">
         Register with your email. The gym will set up your member profile and approve your account.
       </p>
 
@@ -114,9 +114,9 @@ export function RegisterPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-slate-400">
         Already registered?{' '}
-        <Link to="/login" className="font-medium text-brand-600 hover:text-brand-700">
+        <Link to="/login" className="font-medium text-brand-400 hover:text-brand-200">
           Sign in
         </Link>
       </p>

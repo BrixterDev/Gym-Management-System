@@ -137,7 +137,7 @@ export function SettingsPage() {
         </div>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-5 xl:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader
             title="Gym configuration"
@@ -150,9 +150,9 @@ export function SettingsPage() {
           <CardBody>
             {query.isLoading ? (
               <div className="space-y-4">
-                <div className="h-10 w-full animate-pulse rounded bg-slate-50" />
-                <div className="h-10 w-full animate-pulse rounded bg-slate-50" />
-                <div className="h-10 w-full animate-pulse rounded bg-slate-50" />
+                <div className="h-10 w-full animate-pulse rounded bg-white/[0.03]" />
+                <div className="h-10 w-full animate-pulse rounded bg-white/[0.03]" />
+                <div className="h-10 w-full animate-pulse rounded bg-white/[0.03]" />
               </div>
             ) : (
               <form
@@ -177,7 +177,7 @@ export function SettingsPage() {
                       </option>
                     ))}
                   </Select>
-                  <p className="mt-1.5 flex items-start gap-1.5 text-xs leading-relaxed text-slate-500">
+                  <p className="mt-1.5 flex items-start gap-1.5 text-xs leading-relaxed text-slate-400">
                     <Clock className="mt-0.5 size-3.5 shrink-0" aria-hidden />
                     Used for check-in dates, membership validity, attendance reports, and CSV
                     exports. Current time: <strong className="font-medium">{timezonePreview}</strong>
@@ -202,7 +202,7 @@ export function SettingsPage() {
                   {...register('admin_qr_url')}
                 />
 
-                <div className="flex justify-end border-t border-slate-100 pt-4">
+                <div className="flex justify-end border-t border-white/[0.07] pt-4">
                   <Button
                     type="submit"
                     loading={mutation.isPending}
@@ -220,7 +220,7 @@ export function SettingsPage() {
         <div className="space-y-5">
           <Card>
             <CardHeader title="Why this matters" />
-            <CardBody className="space-y-3 text-sm leading-relaxed text-slate-600">
+            <CardBody className="space-y-3 text-sm leading-relaxed text-slate-300">
               <p className="flex items-start gap-2">
                 <Globe2 className="mt-0.5 size-4 shrink-0 text-slate-400" aria-hidden />
                 Membership start/end dates, check-in days, and report buckets are calculated in the
@@ -236,7 +236,7 @@ export function SettingsPage() {
 
           <Card>
             <CardHeader title="Guarded in the database" />
-            <CardBody className="space-y-2 text-sm leading-relaxed text-slate-600">
+            <CardBody className="space-y-2 text-sm leading-relaxed text-slate-300">
               <p className="flex items-start gap-2">
                 <ShieldCheck className="mt-0.5 size-4 shrink-0 text-slate-400" aria-hidden />
                 Only approved admins can update these settings. The database validates the timezone
@@ -253,10 +253,10 @@ export function SettingsPage() {
       {query.data && (
         <section className="mt-8" aria-labelledby="qr-posters-heading">
           <div className="mb-4">
-            <h2 id="qr-posters-heading" className="text-base font-semibold text-slate-900">
+            <h2 id="qr-posters-heading" className="text-base font-semibold text-slate-100">
               Printable QR posters
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-400">
               Print the client poster for the entrance and the staff card for the front desk. QR
               codes encode links only — check-in is still verified against the member's account and
               subscription.

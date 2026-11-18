@@ -142,10 +142,10 @@ export function SubscriptionsPage() {
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {statusOrder.map((status) => (
           <Card key={status}>
-            <CardBody className="flex items-center justify-between py-3.5">
-              <div>
-                <p className="text-xs font-medium capitalize text-slate-500">{status}</p>
-                <p className="mt-0.5 text-xl font-semibold text-slate-900">
+            <CardBody className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 py-3.5">
+              <div className="min-w-0">
+                <p className="text-xs font-medium capitalize text-slate-400">{status}</p>
+                <p className="mt-0.5 text-xl font-semibold text-slate-100">
                   {summaryMap.get(status) ?? 0}
                 </p>
               </div>
@@ -163,8 +163,8 @@ export function SubscriptionsPage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-3 border-b border-slate-100 p-4 sm:grid-cols-2">
+      <div className="glass-panel rounded-2xl">
+        <div className="grid gap-3 border-b border-white/[0.07] p-4 sm:grid-cols-2">
           <Input
             type="search"
             placeholder="Search client, member code, or plan"
@@ -191,7 +191,7 @@ export function SubscriptionsPage() {
         {query.isLoading ? (
           <div className="space-y-3 p-4" aria-busy="true">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="h-14 animate-pulse rounded-lg bg-slate-50" />
+              <div key={index} className="h-14 animate-pulse rounded-lg bg-white/[0.03]" />
             ))}
           </div>
         ) : rows.length === 0 ? (
@@ -217,10 +217,10 @@ export function SubscriptionsPage() {
           />
         ) : (
           <>
-            <div className="hidden overflow-x-auto lg:block">
+            <div className="hidden min-w-0 xl:block">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400">
+                  <tr className="border-b border-white/[0.07] text-xs uppercase tracking-wide text-slate-400">
                     <th scope="col" className="px-4 py-3 font-medium">Client</th>
                     <th scope="col" className="px-4 py-3 font-medium">Plan</th>
                     <th scope="col" className="px-4 py-3 font-medium">Period</th>
@@ -229,23 +229,23 @@ export function SubscriptionsPage() {
                     <th scope="col" className="px-4 py-3 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/[0.07]">
                   {rows.map((row) => (
-                    <tr key={row.id} className="align-top hover:bg-slate-50/60">
+                    <tr key={row.id} className="align-top hover:bg-white/[0.04]">
                       <td className="px-4 py-3">
                         <Link
                           to={`/admin/clients/${row.client_id}`}
-                          className="font-medium text-slate-900 hover:text-brand-700"
+                          className="font-medium text-slate-100 hover:text-brand-200"
                         >
                           {row.display_name ?? 'Unnamed member'}
                         </Link>
-                        <p className="text-xs text-slate-500">{row.member_code ?? row.email}</p>
+                        <p className="text-xs text-slate-400">{row.member_code ?? row.email}</p>
                       </td>
                       <td className="px-4 py-3">
-                        <p className="text-slate-800">{row.plan_name}</p>
-                        <p className="text-xs text-slate-500">{formatCurrency(row.price_at_assignment)}</p>
+                        <p className="text-slate-200">{row.plan_name}</p>
+                        <p className="text-xs text-slate-400">{formatCurrency(row.price_at_assignment)}</p>
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600">
+                      <td className="px-4 py-3 text-xs text-slate-300">
                         <p>{formatDate(row.start_date)} → {formatDate(row.end_date)}</p>
                         <p className="mt-0.5 text-slate-400">{remainingLabel(row)}</p>
                       </td>
@@ -253,9 +253,9 @@ export function SubscriptionsPage() {
                         <SubscriptionStatusBadge status={row.subscription_status} />
                       </td>
                       <td className="px-4 py-3 text-xs">
-                        <p className="font-medium text-slate-800">{formatCurrency(row.paid_amount)}</p>
+                        <p className="font-medium text-slate-200">{formatCurrency(row.paid_amount)}</p>
                         {row.pending_amount > 0 && (
-                          <p className="text-amber-600">{formatCurrency(row.pending_amount)} pending</p>
+                          <p className="text-amber-400">{formatCurrency(row.pending_amount)} pending</p>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -273,28 +273,28 @@ export function SubscriptionsPage() {
               </table>
             </div>
 
-            <ul className="divide-y divide-slate-100 lg:hidden">
+            <ul className="divide-y divide-white/[0.07] xl:hidden">
               {rows.map((row) => (
                 <li key={row.id} className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <Link
                         to={`/admin/clients/${row.client_id}`}
-                        className="truncate text-sm font-semibold text-slate-900"
+                        className="truncate text-sm font-semibold text-slate-100"
                       >
                         {row.display_name ?? 'Unnamed member'}
                       </Link>
-                      <p className="truncate text-xs text-slate-500">{row.email}</p>
+                      <p className="truncate text-xs text-slate-400">{row.email}</p>
                     </div>
                     <SubscriptionStatusBadge status={row.subscription_status} />
                   </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
                     <Badge tone="slate">{row.plan_name}</Badge>
                     <span>{formatDate(row.start_date)} → {formatDate(row.end_date)}</span>
                   </div>
                   <div className="mt-1 flex items-center justify-between text-xs">
                     <span className="text-slate-400">{remainingLabel(row)}</span>
-                    <span className="font-medium text-slate-700">{formatCurrency(row.paid_amount)} paid</span>
+                    <span className="font-medium text-slate-300">{formatCurrency(row.paid_amount)} paid</span>
                   </div>
                   <div className="mt-3">
                     <SubscriptionsActions
@@ -312,8 +312,8 @@ export function SubscriptionsPage() {
         )}
 
         {rows.length > 0 && (
-          <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3">
-            <p className="text-xs text-slate-500">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-white/[0.07] px-4 py-3">
+            <p className="text-xs text-slate-400">
               {count} subscription{count === 1 ? '' : 's'}
             </p>
             <div className="flex items-center gap-2">
@@ -326,7 +326,7 @@ export function SubscriptionsPage() {
                 <ChevronLeft className="size-3.5" aria-hidden />
                 Previous
               </Button>
-              <span className="text-xs text-slate-500">
+              <span className="whitespace-nowrap text-xs text-slate-400">
                 Page {filters.page} of {totalPages}
               </span>
               <Button
@@ -390,7 +390,7 @@ export function SubscriptionsPage() {
         loading={actionMutation.isPending}
       />
 
-      <p className="mt-4 text-xs leading-relaxed text-slate-500">
+      <p className="mt-4 text-xs leading-relaxed text-slate-400">
         Active subscriptions that pass their end date are automatically marked expired when this
         page loads. Status is also re-validated server-side at check-in.
       </p>
@@ -455,7 +455,7 @@ function SubscriptionsActions({
         </Button>
       )}
       {!isCancelled && (
-        <Button variant="ghost" size="sm" className="text-rose-600 hover:bg-rose-50" onClick={() => onConfirm('cancel')}>
+        <Button variant="ghost" size="sm" className="text-rose-400 hover:bg-rose-500/10" onClick={() => onConfirm('cancel')}>
           <XCircle className="size-3.5" aria-hidden />
           Cancel
         </Button>

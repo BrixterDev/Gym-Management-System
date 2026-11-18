@@ -89,7 +89,7 @@ export function ProfilePage() {
         description="Your account, membership, and contact details."
       />
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-5 xl:grid-cols-2">
         <div className="space-y-5">
           <Card>
             <CardHeader
@@ -99,30 +99,30 @@ export function ProfilePage() {
             />
             <CardBody className="space-y-3 text-sm">
               <div className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-slate-500">
+                <span className="flex items-center gap-2 text-slate-400">
                   <User className="size-4" aria-hidden />
                   Name
                 </span>
-                <span className="font-medium text-slate-900">
+                <span className="font-medium text-slate-100">
                   {clientDetail?.display_name ?? 'Not set'}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-slate-500">
+                <span className="flex items-center gap-2 text-slate-400">
                   <Mail className="size-4" aria-hidden />
                   Email
                 </span>
-                <span className="truncate font-medium text-slate-900">{profile?.email ?? '—'}</span>
+                <span className="truncate font-medium text-slate-100">{profile?.email ?? '—'}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Member code</span>
-                <span className="font-mono text-xs font-medium text-slate-900">
+                <span className="text-slate-400">Member code</span>
+                <span className="font-mono text-xs font-medium text-slate-100">
                   {clientDetail?.member_code ?? 'Not assigned'}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Member since</span>
-                <span className="font-medium text-slate-900">
+                <span className="text-slate-400">Member since</span>
+                <span className="font-medium text-slate-100">
                   {formatDate(profile?.created_at)}
                 </span>
               </div>
@@ -156,7 +156,7 @@ export function ProfilePage() {
                   </Button>
                 </div>
               </form>
-              <p className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-slate-500">
+              <p className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-slate-400">
                 <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden />
                 Name, member code, height, date of birth, and emergency contact are maintained by
                 gym staff.
@@ -179,26 +179,26 @@ export function ProfilePage() {
             <CardBody>
               {membershipsQuery.isLoading ? (
                 <div className="space-y-2">
-                  <div className="h-4 w-32 animate-pulse rounded bg-slate-100" />
-                  <div className="h-4 w-48 animate-pulse rounded bg-slate-50" />
+                  <div className="h-4 w-32 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-4 w-48 animate-pulse rounded bg-white/[0.03]" />
                 </div>
               ) : membership ? (
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-slate-500">Plan</span>
-                    <span className="font-medium text-slate-900">
+                    <span className="text-slate-400">Plan</span>
+                    <span className="font-medium text-slate-100">
                       {membership.plan?.name ?? 'Membership plan'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-slate-500">Valid</span>
-                    <span className="text-right font-medium text-slate-900">
+                    <span className="text-slate-400">Valid</span>
+                    <span className="text-right font-medium text-slate-100">
                       {formatDate(membership.start_date)} → {formatDate(membership.end_date)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-slate-500">Price at signup</span>
-                    <span className="font-medium text-slate-900">
+                    <span className="text-slate-400">Price at signup</span>
+                    <span className="font-medium text-slate-100">
                       {membership.price_at_assignment != null
                         ? formatCurrency(membership.price_at_assignment)
                         : '—'}
@@ -206,7 +206,7 @@ export function ProfilePage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm leading-relaxed text-slate-600">
+                <p className="text-sm leading-relaxed text-slate-300">
                   No active membership. Ask the gym admin to assign a plan.
                 </p>
               )}
@@ -220,7 +220,7 @@ export function ProfilePage() {
                 </Link>
                 <Link
                   to="/app/progress"
-                  className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 text-sm font-medium text-slate-200 transition-colors hover:bg-white/10"
                 >
                   View progress
                 </Link>
@@ -232,25 +232,25 @@ export function ProfilePage() {
             <CardHeader title="Personal details" description="Read-only" />
             <CardBody className="space-y-3 text-sm">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Height</span>
-                <span className="font-medium text-slate-900">
+                <span className="text-slate-400">Height</span>
+                <span className="font-medium text-slate-100">
                   {clientDetail?.height_cm != null ? `${clientDetail.height_cm} cm` : '—'}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Date of birth</span>
-                <span className="font-medium text-slate-900">
+                <span className="text-slate-400">Date of birth</span>
+                <span className="font-medium text-slate-100">
                   {clientDetail?.date_of_birth ? formatDate(clientDetail.date_of_birth) : '—'}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Emergency contact</span>
-                <span className="max-w-48 truncate text-right font-medium text-slate-900">
+                <span className="text-slate-400">Emergency contact</span>
+                <span className="max-w-48 truncate text-right font-medium text-slate-100">
                   {clientDetail?.emergency_contact ?? '—'}
                 </span>
               </div>
               {clientDetail?.notes && (
-                <div className="rounded-lg bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-600">
+                <div className="rounded-lg bg-white/[0.03] px-3 py-2 text-xs leading-relaxed text-slate-300">
                   {clientDetail.notes}
                 </div>
               )}
@@ -259,7 +259,7 @@ export function ProfilePage() {
 
           <Card>
             <CardHeader title="Account safety" />
-            <CardBody className="space-y-3 text-sm text-slate-600">
+            <CardBody className="space-y-3 text-sm text-slate-300">
               <p className="flex items-start gap-2">
                 <Shield className="mt-0.5 size-4 shrink-0 text-slate-400" aria-hidden />
                 Your QR code identifies your membership. Keep it private and ask the gym to

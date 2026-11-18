@@ -98,19 +98,19 @@ function PaymentFields({
   const balance = selectedPrice != null ? Math.max(selectedPrice - recorded, 0) : null
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+    <div className="rounded-xl border border-white/10 bg-white/[0.05] p-4">
       <label className="flex items-start gap-3">
         <input
           type="checkbox"
-          className="mt-0.5 size-4 rounded border-slate-300 accent-brand-600"
+          className="mt-0.5 size-4 rounded border-white/15 accent-brand-600"
           {...register('record_payment')}
         />
         <span>
-          <span className="flex items-center gap-1.5 text-sm font-medium text-slate-900">
+          <span className="flex items-center gap-1.5 text-sm font-medium text-slate-100">
             <Wallet className="size-4 text-slate-400" aria-hidden />
             Record payment now
           </span>
-          <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">
+          <span className="mt-0.5 block text-xs leading-relaxed text-slate-400">
             Optional. Turn off for unpaid, trial, or comped memberships.
           </span>
         </span>
@@ -156,7 +156,7 @@ function PaymentFields({
           />
 
           {selectedPrice != null && (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400">
               Recording {formatCurrency(recorded)} of {formatCurrency(selectedPrice)}
               {balance != null && balance > 0 ? ` · ${formatCurrency(balance)} balance` : ''}
             </p>
@@ -194,13 +194,13 @@ function ClientPicker({
   if (selected) {
     return (
       <div>
-        <span className="mb-1.5 block text-sm font-medium text-slate-700">Client</span>
-        <div className="flex items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2">
-          <span className="min-w-0 flex-1 truncate text-sm text-slate-900">{selected.label}</span>
+        <span className="mb-1.5 block text-sm font-medium text-slate-300">Client</span>
+        <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2">
+          <span className="min-w-0 flex-1 truncate text-sm text-slate-100">{selected.label}</span>
           <button
             type="button"
             onClick={() => onSelect(null)}
-            className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200"
+            className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-white/10"
             aria-label="Clear selected client"
           >
             <X className="size-3.5" aria-hidden />
@@ -221,11 +221,11 @@ function ClientPicker({
         autoComplete="off"
       />
       {deferred.trim().length > 0 && (
-        <div className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg">
+        <div className="glass-bar absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border shadow-2xl">
           {query.isLoading ? (
-            <p className="px-3 py-2 text-xs text-slate-500">Searching…</p>
+            <p className="px-3 py-2 text-xs text-slate-400">Searching…</p>
           ) : (query.data?.rows.length ?? 0) === 0 ? (
-            <p className="px-3 py-2 text-xs text-slate-500">No clients found.</p>
+            <p className="px-3 py-2 text-xs text-slate-400">No clients found.</p>
           ) : (
             <ul>
               {query.data?.rows.map((client) => (
@@ -239,12 +239,12 @@ function ClientPicker({
                       })
                       setTerm('')
                     }}
-                    className="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50"
+                    className="block w-full px-3 py-2 text-left text-sm hover:bg-white/[0.04]"
                   >
-                    <span className="block truncate font-medium text-slate-900">
+                    <span className="block truncate font-medium text-slate-100">
                       {client.display_name ?? 'Unnamed member'}
                     </span>
-                    <span className="block truncate text-xs text-slate-500">{client.email}</span>
+                    <span className="block truncate text-xs text-slate-400">{client.email}</span>
                   </button>
                 </li>
               ))}
@@ -424,12 +424,12 @@ export function AssignSubscriptionDialog({
         />
 
         {selectedPlan && startDate && (
-          <div className="rounded-lg border border-brand-100 bg-brand-50/60 px-4 py-3 text-sm text-brand-900">
+          <div className="rounded-lg border border-brand-400/20 bg-brand-500/10 px-4 py-3 text-sm text-brand-200">
             <p className="flex items-center gap-2 font-medium">
               <CalendarDays className="size-4" aria-hidden />
               {formatDate(startDate)} → {formatDate(addDays(startDate, selectedPlan.duration_days - 1))}
             </p>
-            <p className="mt-1 text-xs text-brand-700">
+            <p className="mt-1 text-xs text-brand-300">
               {selectedPlan.duration_days}{' '}
               {selectedPlan.duration_days === 1 ? 'day' : 'days'} ·{' '}
               {formatCurrency(selectedPlan.price)} recorded as
@@ -590,7 +590,7 @@ export function RenewSubscriptionDialog({
         noValidate
       >
         {formError && <Alert tone="error">{formError}</Alert>}
-        <p className="text-sm leading-relaxed text-slate-600">
+        <p className="text-sm leading-relaxed text-slate-300">
           The current subscription is retired as <strong>expired</strong> and a new subscription is
           created. History is preserved for reporting.
         </p>
@@ -607,11 +607,11 @@ export function RenewSubscriptionDialog({
         <Input label="New start date" type="date" error={errors.start_date?.message} {...register('start_date')} />
 
         {selectedPlan && startDate && (
-          <div className="rounded-lg border border-brand-100 bg-brand-50/60 px-4 py-3 text-sm text-brand-900">
+          <div className="rounded-lg border border-brand-400/20 bg-brand-500/10 px-4 py-3 text-sm text-brand-200">
             <p className="font-medium">
               {formatDate(startDate)} → {formatDate(addDays(startDate, selectedPlan.duration_days - 1))}
             </p>
-            <p className="mt-1 text-xs text-brand-700">{formatCurrency(selectedPlan.price)}</p>
+            <p className="mt-1 text-xs text-brand-300">{formatCurrency(selectedPlan.price)}</p>
           </div>
         )}
 
@@ -711,7 +711,7 @@ export function ChangePlanDialog({
             </option>
           ))}
         </Select>
-        <p className="text-xs leading-relaxed text-slate-500">
+        <p className="text-xs leading-relaxed text-slate-400">
           Cancellation is terminal. Remaining days on the old subscription are not carried over.
         </p>
       </div>

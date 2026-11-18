@@ -21,10 +21,10 @@ interface ToastApi {
 const ToastContext = createContext<ToastApi | undefined>(undefined)
 
 const toneStyles: Record<ToastTone, { icon: typeof Info; className: string }> = {
-  success: { icon: CheckCircle2, className: 'text-emerald-600' },
-  error: { icon: XCircle, className: 'text-rose-600' },
-  info: { icon: Info, className: 'text-brand-600' },
-  warning: { icon: TriangleAlert, className: 'text-amber-600' },
+  success: { icon: CheckCircle2, className: 'text-emerald-400' },
+  error: { icon: XCircle, className: 'text-rose-400' },
+  info: { icon: Info, className: 'text-brand-400' },
+  warning: { icon: TriangleAlert, className: 'text-amber-400' },
 }
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -67,19 +67,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           return (
             <div
               key={item.id}
-              className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-slate-200 bg-white p-3.5 shadow-lg"
+              className="glass-panel pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl p-3.5"
             >
               <Icon className={cn('mt-0.5 size-5 shrink-0', className)} aria-hidden />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-900">{item.title}</p>
+                <p className="text-sm font-medium text-slate-100">{item.title}</p>
                 {item.description && (
-                  <p className="mt-0.5 text-xs leading-relaxed text-slate-500">{item.description}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-slate-400">{item.description}</p>
                 )}
               </div>
               <button
                 type="button"
                 onClick={() => dismiss(item.id)}
-                className="flex size-6 shrink-0 items-center justify-center rounded text-slate-400 hover:bg-slate-100"
+                className="flex size-6 shrink-0 items-center justify-center rounded text-slate-400 transition-colors hover:bg-white/10 hover:text-slate-100"
                 aria-label="Dismiss notification"
               >
                 <X className="size-3.5" aria-hidden />

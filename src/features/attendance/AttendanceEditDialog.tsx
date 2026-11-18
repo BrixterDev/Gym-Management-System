@@ -135,12 +135,12 @@ export function AttendanceEditDialog({
           required
         />
 
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-slate-300">
           <input
             type="checkbox"
             checked={stillInGym}
             onChange={(event) => setStillInGym(event.target.checked)}
-            className="size-4 rounded border-slate-300"
+            className="size-4 rounded border-white/15"
           />
           Still in the gym (no time out yet)
         </label>
@@ -154,16 +154,16 @@ export function AttendanceEditDialog({
           />
         )}
 
-        <p className="text-xs leading-relaxed text-slate-500">
+        <p className="text-xs leading-relaxed text-slate-400">
           Times are entered in your local time and stored as absolute timestamps. Corrections are
           audited with your admin account.
         </p>
 
-        <div className="border-t border-slate-100 pt-4">
+        <div className="border-t border-white/[0.07] pt-4">
           {confirmDelete ? (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 p-3">
-              <p className="text-sm font-medium text-rose-900">Delete this attendance record?</p>
-              <p className="mt-1 text-xs text-rose-700">
+            <div className="rounded-lg border border-rose-400/25 bg-rose-500/15 p-3">
+              <p className="text-sm font-medium text-rose-200">Delete this attendance record?</p>
+              <p className="mt-1 text-xs text-rose-300">
                 This cannot be undone. The deletion is written to the audit log.
               </p>
               <div className="mt-3 flex gap-2">
@@ -190,7 +190,7 @@ export function AttendanceEditDialog({
               type="button"
               variant="ghost"
               size="sm"
-              className="text-rose-600 hover:bg-rose-50"
+              className="text-rose-400 hover:bg-rose-500/10"
               onClick={() => setConfirmDelete(true)}
             >
               <Trash2 className="size-3.5" aria-hidden />

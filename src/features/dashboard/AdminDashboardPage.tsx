@@ -79,17 +79,17 @@ export function AdminDashboardPage() {
         action={<Badge tone="blue">Administrator</Badge>}
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 xl:grid-cols-3">
         <Card>
           <CardHeader title="Your account" description="Provisioned by seed script" />
           <CardBody className="space-y-3 text-sm">
             <Row label="Email" value={profile?.email ?? '—'} />
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Account status</span>
+              <span className="text-slate-400">Account status</span>
               {profile && <AccountStatusBadge status={profile.account_status} />}
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Membership</span>
+              <span className="text-slate-400">Membership</span>
               {profile && <MembershipStatusBadge status={profile.membership_status} />}
             </div>
             <Row label="Since" value={formatDate(profile?.created_at)} />
@@ -103,7 +103,7 @@ export function AdminDashboardPage() {
             action={
               <Link
                 to="/admin/reports"
-                className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-800"
+                className="inline-flex items-center gap-1 text-sm font-medium text-brand-300 hover:text-brand-100"
               >
                 Full reports
                 <ArrowRight className="size-3.5" aria-hidden />
@@ -118,9 +118,9 @@ export function AdminDashboardPage() {
             ) : summaryQuery.isLoading || !summary ? (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="rounded-lg border border-slate-100 px-3 py-3">
-                    <div className="h-3 w-16 animate-pulse rounded bg-slate-100" />
-                    <div className="mt-2 h-6 w-20 animate-pulse rounded bg-slate-100" />
+                  <div key={index} className="rounded-lg border border-white/[0.07] px-3 py-3">
+                    <div className="h-3 w-16 animate-pulse rounded bg-white/[0.06]" />
+                    <div className="mt-2 h-6 w-20 animate-pulse rounded bg-white/[0.06]" />
                   </div>
                 ))}
               </div>
@@ -146,7 +146,7 @@ export function AdminDashboardPage() {
                   value={String(summary.active_members)}
                   icon={<Users className="size-3.5" aria-hidden />}
                 />
-                <p className="col-span-2 text-xs text-slate-500 sm:col-span-4">
+                <p className="col-span-2 text-xs text-slate-400 sm:col-span-4">
                   {summary.expiring_soon > 0
                     ? `${summary.expiring_soon} membership${
                         summary.expiring_soon === 1 ? '' : 's'
@@ -159,25 +159,25 @@ export function AdminDashboardPage() {
         </Card>
       </div>
 
-      <Card className="mt-6 border-brand-200 bg-brand-50/50">
+      <Card className="mt-6 border-brand-400/25">
         <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
               <Ticket className="size-5" aria-hidden />
             </span>
             <div>
-              <p className="text-sm font-semibold text-slate-900">Walk-in day pass</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
+              <p className="text-sm font-semibold text-slate-100">Walk-in day pass</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-slate-300">
                 Sell single-day access. The pass is valid until closing on the selected date.
               </p>
               {plansQuery.isLoading ? (
-                <p className="mt-1 text-xs text-slate-500">Loading plan…</p>
+                <p className="mt-1 text-xs text-slate-400">Loading plan…</p>
               ) : dayPassPlan ? (
-                <p className="mt-1 text-xs font-medium text-brand-700">
+                <p className="mt-1 text-xs font-medium text-brand-300">
                   {formatCurrency(dayPassPlan.price)} · 1 day
                 </p>
               ) : (
-                <p className="mt-1 text-xs text-amber-700">
+                <p className="mt-1 text-xs text-amber-300">
                   No active “Day Pass” plan. Create one in{' '}
                   <Link to="/admin/plans" className="underline">
                     Plans
@@ -198,21 +198,21 @@ export function AdminDashboardPage() {
         </CardBody>
       </Card>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {quickLinks.map((link) => (
           <Link
             key={link.to}
             to={link.to}
-            className="group rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+            className="group glass-panel glass-hover rounded-2xl p-5"
           >
-            <span className="flex size-10 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+            <span className="flex size-10 items-center justify-center rounded-lg bg-brand-500/10 text-brand-400">
               <link.icon className="size-5" aria-hidden />
             </span>
-            <h3 className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+            <h3 className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-slate-100">
               {link.title}
               <ArrowRight className="size-3.5 text-slate-400 transition-transform group-hover:translate-x-0.5" aria-hidden />
             </h3>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">{link.description}</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-400">{link.description}</p>
           </Link>
         ))}
       </div>
@@ -229,8 +229,8 @@ export function AdminDashboardPage() {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-slate-500">{label}</span>
-      <span className="truncate font-medium text-slate-900">{value}</span>
+      <span className="text-slate-400">{label}</span>
+      <span className="truncate font-medium text-slate-100">{value}</span>
     </div>
   )
 }
@@ -245,12 +245,12 @@ function Stat({
   icon: React.ReactNode
 }) {
   return (
-    <div className="rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-3">
+    <div className="rounded-lg border border-white/[0.07] bg-white/[0.04] px-3 py-3">
       <p className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
         {icon}
         {label}
       </p>
-      <p className="mt-1 text-lg font-semibold text-slate-900">{value}</p>
+      <p className="mt-1 text-lg font-semibold text-slate-100">{value}</p>
     </div>
   )
 }

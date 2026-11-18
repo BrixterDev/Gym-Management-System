@@ -40,7 +40,7 @@ export function DateRangeControls({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="glass-panel rounded-2xl p-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
         <div className="lg:w-44">
           <Select
@@ -75,7 +75,7 @@ export function DateRangeControls({
         </div>
 
         <div className="flex flex-1 items-center justify-between gap-3 lg:justify-end">
-          <p className="flex items-center gap-1.5 text-xs text-slate-500">
+          <p className="flex items-center gap-1.5 text-xs text-slate-400">
             <CalendarRange className="size-3.5" aria-hidden />
             {days > 0 ? `${days} day${days === 1 ? '' : 's'}` : 'Select dates'}
           </p>
@@ -87,7 +87,7 @@ export function DateRangeControls({
       </div>
 
       {error && (
-        <p role="alert" className="mt-2 text-xs text-rose-600">
+        <p role="alert" className="mt-2 text-xs text-rose-400">
           {error}
         </p>
       )}

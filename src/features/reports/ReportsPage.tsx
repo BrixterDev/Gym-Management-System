@@ -59,10 +59,10 @@ const methodLabels: Record<PaymentMethod, string> = {
 }
 
 const methodColors: Record<PaymentMethod, string> = {
-  cash: '#0d9488',
-  gcash: '#0284c7',
-  card: '#7c3aed',
-  bank_transfer: '#f59e0b',
+  cash: '#34d399',
+  gcash: '#38bdf8',
+  card: '#a78bfa',
+  bank_transfer: '#fbbf24',
 }
 
 function shortDate(value: string) {
@@ -253,7 +253,7 @@ export function ReportsPage() {
         </div>
       )}
 
-      <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mt-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
         {loading || !summary ? (
           Array.from({ length: 4 }).map((_, index) => <KpiSkeleton key={index} />)
         ) : (
@@ -298,7 +298,7 @@ export function ReportsPage() {
               label="Active members"
               value={String(summary.active_members)}
               hint={
-                <span className="text-slate-500">
+                <span className="text-slate-400">
                   {summary.expiring_soon > 0
                     ? `${summary.expiring_soon} expiring within 7 days`
                     : 'None expiring this week'}
@@ -310,7 +310,7 @@ export function ReportsPage() {
         )}
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader
             title="Revenue trend"
@@ -338,15 +338,15 @@ export function ReportsPage() {
                   <AreaChart data={revenue} margin={{ top: 8, right: 12, bottom: 0, left: -8 }}>
                     <defs>
                       <linearGradient id="paidFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#0284c7" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#0284c7" stopOpacity={0} />
+                        <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="#38bdf8" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="pendingFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.25} />
-                        <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
+                        <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#fbbf24" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" vertical={false} />
                     <XAxis
                       dataKey="report_date"
                       tickFormatter={shortDate}
@@ -368,19 +368,19 @@ export function ReportsPage() {
                         formatCurrency(Number(value)),
                         name === 'paid_total' ? 'Collected' : 'Pending',
                       ]}
-                      contentStyle={{ borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 12 }}
+                      contentStyle={{ borderRadius: 12, border: '1px solid rgba(148,163,184,0.25)', background: '#0f172a', color: '#e2e8f0', fontSize: 12 }}
                     />
                     <Area
                       type="monotone"
                       dataKey="paid_total"
-                      stroke="#0284c7"
+                      stroke="#38bdf8"
                       strokeWidth={2}
                       fill="url(#paidFill)"
                     />
                     <Area
                       type="monotone"
                       dataKey="pending_total"
-                      stroke="#f59e0b"
+                      stroke="#fbbf24"
                       strokeWidth={2}
                       fill="url(#pendingFill)"
                     />
@@ -411,13 +411,13 @@ export function ReportsPage() {
                       layout="vertical"
                       margin={{ top: 0, right: 12, bottom: 0, left: 4 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" horizontal={false} />
                       <XAxis type="number" hide />
                       <YAxis
                         type="category"
                         dataKey="payment_method"
                         tickFormatter={(value: PaymentMethod) => methodLabels[value]}
-                        tick={{ fontSize: 11, fill: '#64748b' }}
+                        tick={{ fontSize: 11, fill: '#94a3b8' }}
                         axisLine={false}
                         tickLine={false}
                         width={84}
@@ -428,8 +428,10 @@ export function ReportsPage() {
                           methodLabels[value as PaymentMethod] ?? String(value)
                         }
                         contentStyle={{
-                          borderRadius: 8,
-                          border: '1px solid #e2e8f0',
+                          borderRadius: 12,
+                          border: '1px solid rgba(148,163,184,0.25)',
+                          background: '#0f172a',
+                          color: '#e2e8f0',
                           fontSize: 12,
                         }}
                       />
@@ -444,10 +446,10 @@ export function ReportsPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <ul className="mt-3 space-y-1.5 border-t border-slate-100 pt-3 text-xs">
+                <ul className="mt-3 space-y-1.5 border-t border-white/[0.07] pt-3 text-xs">
                   {methods.map((row) => (
                     <li key={row.payment_method} className="flex items-center justify-between">
-                      <span className="flex items-center gap-2 text-slate-600">
+                      <span className="flex items-center gap-2 text-slate-300">
                         <span
                           className="size-2 rounded-full"
                           style={{ backgroundColor: methodColors[row.payment_method] }}
@@ -455,7 +457,7 @@ export function ReportsPage() {
                         />
                         {methodLabels[row.payment_method]}
                       </span>
-                      <span className="font-medium text-slate-900">
+                      <span className="font-medium text-slate-100">
                         {formatCurrency(row.total_amount)}
                       </span>
                     </li>
@@ -490,7 +492,7 @@ export function ReportsPage() {
             <div className="h-56 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={attendance} margin={{ top: 8, right: 12, bottom: 0, left: -8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" vertical={false} />
                   <XAxis
                     dataKey="report_date"
                     tickFormatter={shortDate}
@@ -512,18 +514,18 @@ export function ReportsPage() {
                       value,
                       name === 'visits' ? 'Visits' : 'Unique visitors',
                     ]}
-                    contentStyle={{ borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 12 }}
+                    contentStyle={{ borderRadius: 12, border: '1px solid rgba(148,163,184,0.25)', background: '#0f172a', color: '#e2e8f0', fontSize: 12 }}
                   />
                   <Legend
                     iconType="circle"
                     iconSize={7}
-                    wrapperStyle={{ fontSize: 11, paddingTop: 8 }}
+                    wrapperStyle={{ fontSize: 11, paddingTop: 8, color: '#cbd5e1' }}
                   />
                   <Line
                     type="monotone"
                     dataKey="visits"
                     name="Visits"
-                    stroke="#0d9488"
+                    stroke="#2dd4bf"
                     strokeWidth={2}
                     dot={false}
                     activeDot={{ r: 4 }}
@@ -532,7 +534,7 @@ export function ReportsPage() {
                     type="monotone"
                     dataKey="unique_visitors"
                     name="Unique visitors"
-                    stroke="#7c3aed"
+                    stroke="#a78bfa"
                     strokeWidth={2}
                     strokeDasharray="4 3"
                     dot={false}
@@ -545,14 +547,14 @@ export function ReportsPage() {
         </CardBody>
       </Card>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 grid gap-4 xl:grid-cols-2">
         <Card>
           <CardHeader title="Plan performance" description="Memberships and revenue by plan" />
           <CardBody className="p-0">
             {loading ? (
               <div className="space-y-2 p-5">
-                <div className="h-4 w-full animate-pulse rounded bg-slate-100" />
-                <div className="h-4 w-5/6 animate-pulse rounded bg-slate-50" />
+                <div className="h-4 w-full animate-pulse rounded bg-white/[0.06]" />
+                <div className="h-4 w-5/6 animate-pulse rounded bg-white/[0.03]" />
               </div>
             ) : plans.length === 0 ? (
               <EmptyState
@@ -561,27 +563,27 @@ export function ReportsPage() {
                 description="Create membership plans to track performance."
               />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
+              <div className="min-w-0">
+                <table className="w-full table-fixed text-left text-sm">
                   <thead>
-                    <tr className="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400">
-                      <th scope="col" className="px-5 py-3 font-medium">Plan</th>
-                      <th scope="col" className="px-4 py-3 text-right font-medium">New</th>
-                      <th scope="col" className="px-4 py-3 text-right font-medium">Active</th>
-                      <th scope="col" className="px-5 py-3 text-right font-medium">Revenue</th>
+                    <tr className="border-b border-white/[0.07] text-xs uppercase tracking-wide text-slate-400">
+                      <th scope="col" className="w-[46%] px-4 py-3 font-medium">Plan</th>
+                      <th scope="col" className="w-[18%] px-2 py-3 text-right font-medium">New</th>
+                      <th scope="col" className="w-[18%] px-2 py-3 text-right font-medium">Active</th>
+                      <th scope="col" className="w-[18%] px-4 py-3 text-right font-medium">Revenue</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-white/[0.07]">
                     {plans.map((plan) => (
-                      <tr key={plan.plan_name} className="hover:bg-slate-50/60">
-                        <td className="px-5 py-3 font-medium text-slate-900">{plan.plan_name}</td>
-                        <td className="px-4 py-3 text-right text-slate-600">
+                      <tr key={plan.plan_name} className="hover:bg-white/[0.04]">
+                        <td className="truncate px-4 py-3 font-medium text-slate-100" title={plan.plan_name}>{plan.plan_name}</td>
+                        <td className="px-2 py-3 text-right text-slate-300">
                           {plan.new_memberships}
                         </td>
-                        <td className="px-4 py-3 text-right text-slate-600">
+                        <td className="px-2 py-3 text-right text-slate-300">
                           {plan.active_members}
                         </td>
-                        <td className="px-5 py-3 text-right font-medium text-slate-900">
+                        <td className="truncate px-4 py-3 text-right font-medium text-slate-100">
                           {formatCurrency(plan.revenue)}
                         </td>
                       </tr>
@@ -620,7 +622,7 @@ export function ReportsPage() {
               disabled={Boolean(rangeError) || exporting !== null}
               onExport={() => runExport('memberships')}
             />
-            <p className="border-t border-slate-100 pt-3 text-xs leading-relaxed text-slate-500">
+            <p className="border-t border-white/[0.07] pt-3 text-xs leading-relaxed text-slate-400">
               Exports are capped at 20,000 rows. Files open directly in Excel or Google Sheets.
             </p>
           </CardBody>
@@ -648,7 +650,7 @@ function KpiCard({
           {icon}
           {label}
         </p>
-        <p className="mt-1 text-2xl font-semibold text-slate-900">{value}</p>
+        <p className="mt-1 text-2xl font-semibold text-slate-100">{value}</p>
         <div className="mt-1 text-xs">{hint}</div>
       </CardBody>
     </Card>
@@ -665,11 +667,11 @@ function Delta({
   suffix: string
 }) {
   if (previous === 0 && current === 0) {
-    return <span className="text-slate-500">No activity {suffix}</span>
+    return <span className="text-slate-400">No activity {suffix}</span>
   }
   if (previous === 0) {
     return (
-      <span className="inline-flex items-center gap-1 text-emerald-700">
+      <span className="inline-flex items-center gap-1 text-emerald-300">
         <ArrowUpRight className="size-3.5" aria-hidden />
         New {suffix}
       </span>
@@ -678,7 +680,7 @@ function Delta({
   const percent = Math.round(((current - previous) / previous) * 100)
   if (percent === 0) {
     return (
-      <span className="inline-flex items-center gap-1 text-slate-500">
+      <span className="inline-flex items-center gap-1 text-slate-400">
         <Minus className="size-3.5" aria-hidden />
         Flat {suffix}
       </span>
@@ -687,7 +689,7 @@ function Delta({
   const up = percent > 0
   return (
     <span
-      className={`inline-flex items-center gap-1 ${up ? 'text-emerald-700' : 'text-rose-600'}`}
+      className={`inline-flex items-center gap-1 ${up ? 'text-emerald-300' : 'text-rose-400'}`}
     >
       {up ? (
         <ArrowUpRight className="size-3.5" aria-hidden />
@@ -713,10 +715,10 @@ function ExportRow({
   onExport: () => void
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-slate-200 p-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-2 rounded-lg border border-white/10 p-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-sm font-medium text-slate-900">{title}</p>
-        <p className="mt-0.5 text-xs leading-relaxed text-slate-500">{description}</p>
+        <p className="text-sm font-medium text-slate-100">{title}</p>
+        <p className="mt-0.5 text-xs leading-relaxed text-slate-400">{description}</p>
       </div>
       <Button
         variant="outline"
@@ -734,16 +736,16 @@ function ExportRow({
 }
 
 function ChartSkeleton() {
-  return <div className="h-56 w-full animate-pulse rounded-lg bg-slate-50" />
+  return <div className="h-56 w-full animate-pulse rounded-lg bg-white/[0.03]" />
 }
 
 function KpiSkeleton() {
   return (
     <Card>
       <CardBody className="py-4">
-        <div className="h-3 w-24 animate-pulse rounded bg-slate-100" />
-        <div className="mt-3 h-7 w-20 animate-pulse rounded bg-slate-100" />
-        <div className="mt-2 h-3 w-32 animate-pulse rounded bg-slate-50" />
+        <div className="h-3 w-24 animate-pulse rounded bg-white/[0.06]" />
+        <div className="mt-3 h-7 w-20 animate-pulse rounded bg-white/[0.06]" />
+        <div className="mt-2 h-3 w-32 animate-pulse rounded bg-white/[0.03]" />
       </CardBody>
     </Card>
   )

@@ -147,7 +147,7 @@ export function CreateClientDialog({
 
         <Input label="Phone" type="tel" placeholder="+63 900 000 0000" error={errors.phone?.message} {...register('phone')} />
 
-        <p className="text-xs leading-relaxed text-slate-500">
+        <p className="text-xs leading-relaxed text-slate-400">
           The account is created server-side with the service role after verifying your admin
           session. No privileged key is exposed to the browser.
         </p>

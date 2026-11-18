@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 export function Spinner({ className, label = 'Loading' }: { className?: string; label?: string }) {
   return (
     <div role="status" className={cn('flex items-center justify-center gap-2 py-8', className)}>
-      <span className="size-5 animate-spin rounded-full border-2 border-slate-300 border-t-brand-600" />
+      <span className="size-5 animate-spin rounded-full border-2 border-white/20 border-t-brand-400" />
       <span className="sr-only">{label}</span>
     </div>
   )
@@ -14,8 +14,8 @@ export function PageLoader() {
   return (
     <div className="flex min-h-[50vh] items-center justify-center">
       <div role="status" className="flex flex-col items-center gap-3">
-        <span className="size-8 animate-spin rounded-full border-[3px] border-slate-200 border-t-brand-600" />
-        <p className="text-sm text-slate-500">Loading…</p>
+        <span className="size-8 animate-spin rounded-full border-[3px] border-white/15 border-t-brand-400" />
+        <p className="text-sm text-slate-400">Loading…</p>
       </div>
     </div>
   )
@@ -34,9 +34,9 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-6 py-12 text-center">
-      {icon && <div className="mb-1 text-slate-300">{icon}</div>}
-      <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-      {description && <p className="max-w-sm text-sm text-slate-500">{description}</p>}
+      {icon && <div className="mb-1 text-slate-500">{icon}</div>}
+      <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
+      {description && <p className="max-w-sm text-sm text-slate-400">{description}</p>}
       {action && <div className="mt-3">{action}</div>}
     </div>
   )
@@ -53,11 +53,11 @@ export function PageHeader({
 }) {
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">{title}</h1>
-        {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
+      <div className="min-w-0">
+        <h1 className="text-xl font-semibold tracking-tight text-slate-100 sm:text-2xl">{title}</h1>
+        {description && <p className="mt-1 text-sm text-slate-400">{description}</p>}
       </div>
-      {action}
+      {action && <div className="flex shrink-0 flex-wrap items-center gap-2">{action}</div>}
     </div>
   )
 }
@@ -72,14 +72,14 @@ export function Alert({
   children: ReactNode
 }) {
   const styles = {
-    info: 'border-brand-200 bg-brand-50 text-brand-800',
-    success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-    warning: 'border-amber-200 bg-amber-50 text-amber-800',
-    error: 'border-rose-200 bg-rose-50 text-rose-800',
+    info: 'border-brand-400/25 bg-brand-500/10 text-brand-200',
+    success: 'border-emerald-400/25 bg-emerald-500/10 text-emerald-200',
+    warning: 'border-amber-400/25 bg-amber-500/10 text-amber-200',
+    error: 'border-rose-400/25 bg-rose-500/10 text-rose-200',
   } as const
 
   return (
-    <div role="alert" className={cn('rounded-lg border px-4 py-3 text-sm', styles[tone])}>
+    <div role="alert" className={cn('rounded-xl border px-4 py-3 text-sm', styles[tone])}>
       {title && <p className="mb-0.5 font-semibold">{title}</p>}
       <div className="[&>p]:leading-relaxed">{children}</div>
     </div>

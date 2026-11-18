@@ -31,7 +31,7 @@ export function ApprovalsPage() {
           {rows.length} pending
         </Badge>
         {rows.length === 0 && !query.isLoading && (
-          <span className="text-xs text-slate-500">All registrations have been reviewed.</span>
+          <span className="text-xs text-slate-400">All registrations have been reviewed.</span>
         )}
       </div>
 
@@ -40,10 +40,10 @@ export function ApprovalsPage() {
           {Array.from({ length: 3 }).map((_, index) => (
             <Card key={index}>
               <CardBody className="flex items-center gap-3">
-                <div className="size-10 animate-pulse rounded-full bg-slate-100" />
+                <div className="size-10 animate-pulse rounded-full bg-white/[0.06]" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-3 w-48 animate-pulse rounded bg-slate-100" />
-                  <div className="h-3 w-32 animate-pulse rounded bg-slate-50" />
+                  <div className="h-3 w-48 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-3 w-32 animate-pulse rounded bg-white/[0.03]" />
                 </div>
               </CardBody>
             </Card>
@@ -70,13 +70,13 @@ export function ApprovalsPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
                         to={`/admin/clients/${client.id}`}
-                        className="truncate text-sm font-semibold text-slate-900 hover:text-brand-700"
+                        className="truncate text-sm font-semibold text-slate-100 hover:text-brand-200"
                       >
                         {client.display_name ?? 'Unnamed registration'}
                       </Link>
                       <AccountStatusBadge status={client.account_status} />
                     </div>
-                    <p className="mt-0.5 truncate text-xs text-slate-500">{client.email}</p>
+                    <p className="mt-0.5 truncate text-xs text-slate-400">{client.email}</p>
                     <p className="mt-1 text-xs text-slate-400">
                       Registered {formatDate(client.created_at)}
                     </p>
@@ -86,7 +86,7 @@ export function ApprovalsPage() {
                   <ClientStatusActions client={client} />
                   <Link
                     to={`/admin/clients/${client.id}`}
-                    className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                    className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-medium text-slate-400 hover:bg-white/[0.08] hover:text-slate-200"
                   >
                     Review
                     <ChevronRight className="size-3.5" aria-hidden />
@@ -100,7 +100,7 @@ export function ApprovalsPage() {
 
       <Card className="mt-6">
         <CardHeader title="How approval works" />
-        <CardBody className="flex items-start gap-3 text-sm leading-relaxed text-slate-600">
+        <CardBody className="flex items-start gap-3 text-sm leading-relaxed text-slate-300">
           <Inbox className="mt-0.5 size-5 shrink-0 text-slate-400" aria-hidden />
           <p>
             Self-registration creates a <strong>pending</strong> account with no name field.

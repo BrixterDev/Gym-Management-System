@@ -20,7 +20,7 @@ export function ClientAvatar({
   const sizes = { sm: 'size-8 text-[11px]', md: 'size-10 text-xs', lg: 'size-14 text-base' }
   return (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-full bg-slate-900 font-semibold text-white ${sizes[size]}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-white/10 font-semibold text-slate-100 ring-1 ring-white/15 ${sizes[size]}`}
       aria-hidden
     >
       {getInitials(name ?? email.split('@')[0] ?? null)}

@@ -150,8 +150,8 @@ export function AttendancePage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-3 border-b border-slate-100 p-4 sm:grid-cols-2">
+      <div className="glass-panel rounded-2xl">
+        <div className="grid gap-3 border-b border-white/[0.07] p-4 sm:grid-cols-2">
           <Input
             type="search"
             placeholder="Search member, email, or code"
@@ -175,7 +175,7 @@ export function AttendancePage() {
         {query.isLoading ? (
           <div className="space-y-3 p-4" aria-busy="true">
             {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="h-14 animate-pulse rounded-lg bg-slate-50" />
+              <div key={index} className="h-14 animate-pulse rounded-lg bg-white/[0.03]" />
             ))}
           </div>
         ) : rows.length === 0 ? (
@@ -206,10 +206,10 @@ export function AttendancePage() {
           />
         ) : (
           <>
-            <div className="hidden overflow-x-auto lg:block">
+            <div className="hidden min-w-0 xl:block">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400">
+                  <tr className="border-b border-white/[0.07] text-xs uppercase tracking-wide text-slate-400">
                     <th scope="col" className="px-4 py-3 font-medium">Member</th>
                     <th scope="col" className="px-4 py-3 font-medium">Plan</th>
                     <th scope="col" className="px-4 py-3 font-medium">Time in</th>
@@ -219,28 +219,28 @@ export function AttendancePage() {
                     <th scope="col" className="px-4 py-3 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/[0.07]">
                   {rows.map((row) => (
-                    <tr key={row.id} className="align-top hover:bg-slate-50/60">
+                    <tr key={row.id} className="align-top hover:bg-white/[0.04]">
                       <td className="px-4 py-3">
                         <Link
                           to={`/admin/clients/${row.client_id}`}
-                          className="font-medium text-slate-900 hover:text-brand-700"
+                          className="font-medium text-slate-100 hover:text-brand-200"
                         >
                           {row.display_name ?? 'Unnamed member'}
                         </Link>
-                        <p className="text-xs text-slate-500">{row.member_code ?? row.email}</p>
+                        <p className="text-xs text-slate-400">{row.member_code ?? row.email}</p>
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600">
+                      <td className="px-4 py-3 text-xs text-slate-300">
                         {row.plan_name ?? '—'}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600">
+                      <td className="px-4 py-3 text-xs text-slate-300">
                         {formatDateTimeIn(row.time_in, timeZone)}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600">
+                      <td className="px-4 py-3 text-xs text-slate-300">
                         {row.time_out ? formatTimeIn(row.time_out, timeZone) : '—'}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600">
+                      <td className="px-4 py-3 text-xs text-slate-300">
                         {formatDuration(row.duration_minutes)}
                       </td>
                       <td className="px-4 py-3">
@@ -270,45 +270,45 @@ export function AttendancePage() {
               </table>
             </div>
 
-            <ul className="divide-y divide-slate-100 lg:hidden">
+            <ul className="divide-y divide-white/[0.07] xl:hidden">
               {rows.map((row) => (
                 <li key={row.id} className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <Link
                         to={`/admin/clients/${row.client_id}`}
-                        className="truncate text-sm font-semibold text-slate-900"
+                        className="truncate text-sm font-semibold text-slate-100"
                       >
                         {row.display_name ?? 'Unnamed member'}
                       </Link>
-                      <p className="truncate text-xs text-slate-500">
+                      <p className="truncate text-xs text-slate-400">
                         {row.member_code ?? row.email}
                       </p>
                     </div>
                     <VisitStatusBadge row={row} />
                   </div>
-                  <dl className="mt-2 grid grid-cols-2 gap-1 text-xs text-slate-500">
+                  <dl className="mt-2 grid grid-cols-2 gap-1 text-xs text-slate-400">
                     <div>
                       <dt className="inline">In: </dt>
-                      <dd className="inline text-slate-700">
+                      <dd className="inline text-slate-300">
                         {formatDateTimeIn(row.time_in, timeZone)}
                       </dd>
                     </div>
                     <div>
                       <dt className="inline">Out: </dt>
-                      <dd className="inline text-slate-700">
+                      <dd className="inline text-slate-300">
                         {row.time_out ? formatTimeIn(row.time_out, timeZone) : '—'}
                       </dd>
                     </div>
                     <div>
                       <dt className="inline">Duration: </dt>
-                      <dd className="inline text-slate-700">
+                      <dd className="inline text-slate-300">
                         {formatDuration(row.duration_minutes)}
                       </dd>
                     </div>
                     <div>
                       <dt className="inline">Plan: </dt>
-                      <dd className="inline text-slate-700">{row.plan_name ?? '—'}</dd>
+                      <dd className="inline text-slate-300">{row.plan_name ?? '—'}</dd>
                     </div>
                   </dl>
                   <div className="mt-3 flex flex-wrap justify-end gap-1.5">
@@ -330,8 +330,8 @@ export function AttendancePage() {
         )}
 
         {rows.length > 0 && (
-          <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3">
-            <p className="text-xs text-slate-500">{pluralize(count, 'visit')}</p>
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-white/[0.07] px-4 py-3">
+            <p className="text-xs text-slate-400">{pluralize(count, 'visit')}</p>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -342,7 +342,7 @@ export function AttendancePage() {
                 <ChevronLeft className="size-3.5" aria-hidden />
                 Previous
               </Button>
-              <span className="text-xs text-slate-500">
+              <span className="whitespace-nowrap text-xs text-slate-400">
                 Page {filters.page} of {totalPages}
               </span>
               <Button
@@ -359,7 +359,7 @@ export function AttendancePage() {
         )}
       </div>
 
-      <p className="mt-4 text-xs leading-relaxed text-slate-500">
+      <p className="mt-4 text-xs leading-relaxed text-slate-400">
         Check-in validates the member's account and live subscription on the server. Paused,
         expired, and cancelled memberships are rejected. Open sessions are flagged if the
         membership lapses before check-out.
@@ -414,7 +414,7 @@ function StatCard({
         </div>
         <p
           className={`mt-1 text-xl font-semibold ${
-            tone === 'green' ? 'text-emerald-700' : 'text-slate-900'
+            tone === 'green' ? 'text-emerald-300' : 'text-slate-100'
           }`}
         >
           {value}

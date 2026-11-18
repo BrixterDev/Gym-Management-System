@@ -105,7 +105,7 @@ export function ProgressPage() {
           {Array.from({ length: 2 }).map((_, index) => (
             <Card key={index}>
               <CardBody>
-                <div className="h-52 animate-pulse rounded-lg bg-slate-50" />
+                <div className="h-52 animate-pulse rounded-lg bg-white/[0.03]" />
               </CardBody>
             </Card>
           ))}
@@ -134,7 +134,7 @@ export function ProgressPage() {
               description="Kilograms over time"
               data={chartData}
               dataKey="weight"
-              color="#0284c7"
+              color="#38bdf8"
               unit=" kg"
             />
             <TrendCard
@@ -142,7 +142,7 @@ export function ProgressPage() {
               description="Centimetres over time"
               data={chartData}
               dataKey="waist"
-              color="#0d9488"
+              color="#2dd4bf"
               unit=" cm"
             />
           </div>
@@ -159,10 +159,10 @@ export function ProgressPage() {
               }
             />
             <CardBody className="p-0">
-              <div className="hidden overflow-x-auto sm:block">
+              <div className="hidden min-w-0 xl:block">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400">
+                    <tr className="border-b border-white/[0.07] text-xs uppercase tracking-wide text-slate-400">
                       <th scope="col" className="px-5 py-3 font-medium">Date</th>
                       <th scope="col" className="px-4 py-3 font-medium">Weight</th>
                       <th scope="col" className="px-4 py-3 font-medium">Height</th>
@@ -172,7 +172,7 @@ export function ProgressPage() {
                       <th scope="col" className="px-5 py-3 text-right font-medium">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-white/[0.07]">
                     {metrics.map((metric) => {
                       const isOwn = metric.recorded_by === profile?.id
                       const bmi =
@@ -182,20 +182,20 @@ export function ProgressPage() {
                           metric.height_cm ?? clientDetail?.height_cm ?? null,
                         )
                       return (
-                        <tr key={metric.id} className="hover:bg-slate-50/60">
-                          <td className="px-5 py-3 text-slate-800">
+                        <tr key={metric.id} className="hover:bg-white/[0.04]">
+                          <td className="px-5 py-3 text-slate-200">
                             {formatDate(metric.measured_at)}
                           </td>
-                          <td className="px-4 py-3 text-xs text-slate-600">
+                          <td className="px-4 py-3 text-xs text-slate-300">
                             {metric.weight_kg != null ? `${metric.weight_kg} kg` : '—'}
                           </td>
-                          <td className="px-4 py-3 text-xs text-slate-600">
+                          <td className="px-4 py-3 text-xs text-slate-300">
                             {metric.height_cm != null ? `${metric.height_cm} cm` : '—'}
                           </td>
-                          <td className="px-4 py-3 text-xs text-slate-600">
+                          <td className="px-4 py-3 text-xs text-slate-300">
                             {metric.waist_cm != null ? `${metric.waist_cm} cm` : '—'}
                           </td>
-                          <td className="px-4 py-3 text-xs text-slate-600">{bmi ?? '—'}</td>
+                          <td className="px-4 py-3 text-xs text-slate-300">{bmi ?? '—'}</td>
                           <td className="px-4 py-3">
                             <Badge tone={isOwn ? 'blue' : 'violet'} dot>
                               {isOwn ? 'Self' : 'Gym'}
@@ -224,16 +224,16 @@ export function ProgressPage() {
                 </table>
               </div>
 
-              <ul className="divide-y divide-slate-100 sm:hidden">
+              <ul className="divide-y divide-white/[0.07] xl:hidden">
                 {metrics.map((metric) => {
                   const isOwn = metric.recorded_by === profile?.id
                   return (
                     <li key={metric.id} className="flex items-start justify-between gap-3 px-5 py-4">
                       <div>
-                        <p className="text-sm font-medium text-slate-900">
+                        <p className="text-sm font-medium text-slate-100">
                           {formatDate(metric.measured_at)}
                         </p>
-                        <p className="mt-0.5 text-xs text-slate-500">
+                        <p className="mt-0.5 text-xs text-slate-400">
                           {metric.weight_kg != null ? `${metric.weight_kg} kg` : '—'} ·{' '}
                           {metric.waist_cm != null ? `${metric.waist_cm} cm waist` : 'no waist'}
                         </p>
@@ -262,7 +262,7 @@ export function ProgressPage() {
         </>
       )}
 
-      <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-slate-500">
+      <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-slate-400">
         <ArrowUpRight className="mt-0.5 size-3.5 shrink-0" aria-hidden />
         Measurements recorded by gym staff are read-only to you. Ask the front desk if one needs
         correcting.
@@ -299,8 +299,8 @@ function StatCard({
           {icon}
           {label}
         </p>
-        <p className="mt-1 text-2xl font-semibold text-slate-900">{value}</p>
-        {hint && <p className="mt-0.5 text-xs text-brand-700">{hint}</p>}
+        <p className="mt-1 text-2xl font-semibold text-slate-100">{value}</p>
+        {hint && <p className="mt-0.5 text-xs text-brand-300">{hint}</p>}
       </CardBody>
     </Card>
   )
@@ -329,7 +329,7 @@ function TrendCard({
         {points.length < 2 ? (
           <div className="flex h-52 flex-col items-center justify-center gap-2 text-center">
             <TrendingUp className="size-8 text-slate-300" aria-hidden />
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-400">
               Add at least two {dataKey} measurements to see a trend.
             </p>
           </div>
@@ -337,7 +337,7 @@ function TrendCard({
           <div className="h-52 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={points} margin={{ top: 8, right: 12, bottom: 0, left: -12 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" vertical={false} />
                 <XAxis
                   dataKey="label"
                   tick={{ fontSize: 11, fill: '#94a3b8' }}
@@ -352,8 +352,10 @@ function TrendCard({
                 />
                 <Tooltip
                   contentStyle={{
-                    borderRadius: 8,
-                    border: '1px solid #e2e8f0',
+                    borderRadius: 12,
+                    border: '1px solid rgba(148,163,184,0.25)',
+                    background: '#0f172a',
+                    color: '#e2e8f0',
                     fontSize: 12,
                   }}
                 />

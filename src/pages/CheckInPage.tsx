@@ -89,7 +89,12 @@ export function CheckInPage() {
   const recent = recentQuery.data?.rows ?? []
 
   return (
-    <div className="min-h-dvh bg-slate-950 px-4 py-6 text-white">
+    <div className="relative min-h-dvh px-4 py-6 text-white">
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="ambient-orb -left-40 -top-48 size-[32rem] bg-brand-500/20" />
+        <div className="ambient-orb -right-40 top-1/3 size-[28rem] bg-violet-500/15" />
+        <div className="ambient-orb -bottom-48 left-1/3 size-[28rem] bg-teal-500/10" />
+      </div>
       <div className="mx-auto w-full max-w-md">
         <div className="mb-6 flex items-center justify-between">
           <Link
@@ -112,7 +117,7 @@ export function CheckInPage() {
           </p>
         </div>
 
-        <Card className="mt-6 border-slate-800 bg-slate-900">
+        <Card className="mt-6">
           <CardBody className="text-center">
             {clientDetail?.qr_token ? (
               <>
@@ -140,7 +145,7 @@ export function CheckInPage() {
           </CardBody>
         </Card>
 
-        <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="glass-panel mt-5 rounded-2xl p-5">
           {openSession ? (
             <>
               <div className="flex items-center justify-between gap-3">
@@ -196,7 +201,7 @@ export function CheckInPage() {
           )}
 
           {membership && (
-            <div className="mt-4 flex items-center justify-between gap-3 border-t border-slate-800 pt-4 text-xs text-slate-400">
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-slate-400">
               <span>
                 {formatDate(membership.start_date)} → {formatDate(membership.end_date)}
               </span>
@@ -218,15 +223,15 @@ export function CheckInPage() {
           {recentQuery.isLoading ? (
             <div className="mt-3 space-y-2">
               {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="h-12 animate-pulse rounded-lg bg-slate-900" />
+                <div key={index} className="h-12 animate-pulse rounded-xl bg-white/[0.06]" />
               ))}
             </div>
           ) : recent.length === 0 ? (
-            <p className="mt-3 rounded-lg border border-slate-800 bg-slate-900 px-4 py-4 text-sm text-slate-400">
+            <p className="glass-panel mt-3 rounded-xl px-4 py-4 text-sm text-slate-400">
               No visits recorded yet.
             </p>
           ) : (
-            <ul className="mt-3 divide-y divide-slate-800 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+            <ul className="glass-panel mt-3 divide-y divide-white/[0.07] overflow-hidden rounded-2xl">
               {recent.map((visit) => (
                 <li
                   key={visit.id}

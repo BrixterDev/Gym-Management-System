@@ -193,15 +193,15 @@ export function MemberScannerDialog({
         {cameraError && <Alert tone="warning">{cameraError}</Alert>}
 
         {result ? (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
+          <div className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 p-4">
             <div className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-600" aria-hidden />
+              <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-400" aria-hidden />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-emerald-900">
+                <p className="text-sm font-semibold text-emerald-200">
                   {result.action === 'checked_in' ? 'Checked in' : 'Checked out'}:{' '}
                   {result.display_name ?? 'Unnamed member'}
                 </p>
-                <p className="mt-0.5 text-xs text-emerald-700">
+                <p className="mt-0.5 text-xs text-emerald-300">
                   {result.member_code ?? 'No member code'} ·{' '}
                   {formatTimeIn(result.occurred_at, timeZone)}
                 </p>
@@ -233,7 +233,7 @@ export function MemberScannerDialog({
               </Button>
             </div>
 
-            <div className="relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-950">
+            <div className="relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-slate-950">
               <video
                 ref={videoRef}
                 playsInline
@@ -242,7 +242,7 @@ export function MemberScannerDialog({
               />
               {!cameraActive && (
                 <div className="flex size-full flex-col items-center justify-center gap-2 p-6 text-center">
-                  <QrCode className="size-10 text-slate-500" aria-hidden />
+                  <QrCode className="size-10 text-slate-400" aria-hidden />
                   <p className="text-sm text-slate-400">
                     Camera preview appears here. Manual entry always works.
                   </p>

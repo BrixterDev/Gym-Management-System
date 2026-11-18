@@ -199,7 +199,7 @@ export function QrPosterCard({
     <Card>
       <CardHeader title={title} description={description} />
       <CardBody className="flex flex-col items-center">
-        <div ref={wrapperRef} className="inline-flex rounded-2xl border border-slate-200 bg-white p-4">
+        <div ref={wrapperRef} className="inline-flex rounded-2xl border border-white/15 bg-white p-4">
           <QRCodeSVG
             value={url}
             size={220}
@@ -211,7 +211,7 @@ export function QrPosterCard({
           />
         </div>
 
-        <p className="mt-4 w-full break-all rounded-lg bg-slate-50 px-3 py-2 text-center font-mono text-xs text-slate-600">
+        <p className="glass-inset mt-4 w-full break-all rounded-xl px-3 py-2 text-center font-mono text-xs text-slate-300">
           {url}
         </p>
 

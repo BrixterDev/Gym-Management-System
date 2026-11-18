@@ -26,7 +26,7 @@ export function RequireAuth() {
     return (
       <div className="flex min-h-dvh items-center justify-center px-6 text-center">
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">Profile unavailable</h1>
+          <h1 className="text-lg font-semibold text-slate-100">Profile unavailable</h1>
           <p className="mt-2 max-w-sm text-sm text-slate-500">
             We couldn't load your profile. Please refresh, or contact the gym administrator.
           </p>
@@ -69,7 +69,7 @@ export function RootRedirect() {
     return (
       <div className="flex min-h-dvh items-center justify-center px-6 text-center">
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">Profile unavailable</h1>
+          <h1 className="text-lg font-semibold text-slate-100">Profile unavailable</h1>
           <p className="mt-2 max-w-sm text-sm text-slate-500">
             {profileError ?? 'We could not load your profile. Please contact the gym administrator.'}
           </p>

@@ -9,16 +9,16 @@ export function PendingApprovalPage() {
 
   return (
     <div className="text-center">
-      <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+      <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-amber-500/15 text-amber-400">
         <Clock className="size-6" aria-hidden />
       </span>
-      <h1 className="mt-5 text-xl font-semibold text-slate-900">Approval pending</h1>
-      <p className="mt-2 text-sm leading-relaxed text-slate-500">
+      <h1 className="mt-5 text-xl font-semibold text-slate-100">Approval pending</h1>
+      <p className="mt-2 text-sm leading-relaxed text-slate-400">
         Your account is waiting for the gym administrator to approve it and set up your member
         profile. You'll be able to check in and view your progress once approved.
       </p>
 
-      <div className="mt-5 flex items-center justify-center gap-2 text-sm text-slate-600">
+      <div className="mt-5 flex items-center justify-center gap-2 text-sm text-slate-300">
         <span>Account status:</span>
         {profile && <AccountStatusBadge status={profile.account_status} />}
       </div>
@@ -43,19 +43,19 @@ export function BlockedAccountPage() {
 
   return (
     <div className="text-center">
-      <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+      <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-rose-500/15 text-rose-400">
         <Icon className="size-6" aria-hidden />
       </span>
-      <h1 className="mt-5 text-xl font-semibold text-slate-900">
+      <h1 className="mt-5 text-xl font-semibold text-slate-100">
         {suspended ? 'Account suspended' : 'Registration not approved'}
       </h1>
-      <p className="mt-2 text-sm leading-relaxed text-slate-500">
+      <p className="mt-2 text-sm leading-relaxed text-slate-400">
         {suspended
           ? 'Your account has been suspended. Please contact the gym front desk for assistance.'
           : 'Your registration was not approved. Please contact the gym front desk if you believe this is a mistake.'}
       </p>
 
-      <div className="mt-5 flex items-center justify-center gap-2 text-sm text-slate-600">
+      <div className="mt-5 flex items-center justify-center gap-2 text-sm text-slate-300">
         <span>Account status:</span>
         {profile && <AccountStatusBadge status={profile.account_status} />}
       </div>

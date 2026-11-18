@@ -17,16 +17,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const describedBy = error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0">
       {label && (
-        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-slate-300">
           {label}
-          {props.required && <span className="ml-0.5 text-rose-500">*</span>}
+          {props.required && <span className="ml-0.5 text-rose-400">*</span>}
         </label>
       )}
       <div className="relative">
         {leadingIcon && (
-          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">
+          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500">
             {leadingIcon}
           </span>
         )}
@@ -36,9 +36,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
           className={cn(
-            'h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 shadow-sm transition-colors placeholder:text-slate-400',
-            'focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none',
-            error ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-300',
+            'h-10 w-full rounded-xl border bg-white/[0.045] px-3 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors placeholder:text-slate-500',
+            'focus:border-brand-400 focus:bg-white/[0.06] focus:ring-2 focus:ring-brand-400/25 focus:outline-none',
+            error
+              ? 'border-rose-400/60 focus:border-rose-400 focus:ring-rose-400/25'
+              : 'border-white/10 hover:border-white/20',
             leadingIcon && 'pl-9',
             className,
           )}
@@ -46,11 +48,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         />
       </div>
       {error ? (
-        <p id={`${inputId}-error`} className="mt-1.5 text-xs text-rose-600">
+        <p id={`${inputId}-error`} className="mt-1.5 text-xs text-rose-300">
           {error}
         </p>
       ) : hint ? (
-        <p id={`${inputId}-hint`} className="mt-1.5 text-xs text-slate-500">
+        <p id={`${inputId}-hint`} className="mt-1.5 text-xs text-slate-400">
           {hint}
         </p>
       ) : null}
@@ -67,9 +69,9 @@ export function Textarea({ label, error, className, id, ...props }: TextareaProp
   const autoId = useId()
   const inputId = id ?? autoId
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0">
       {label && (
-        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-slate-300">
           {label}
         </label>
       )}
@@ -77,14 +79,14 @@ export function Textarea({ label, error, className, id, ...props }: TextareaProp
         id={inputId}
         aria-invalid={Boolean(error)}
         className={cn(
-          'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400',
-          'focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none',
-          error && 'border-rose-400',
+          'w-full rounded-xl border border-white/10 bg-white/[0.045] px-3 py-2 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] placeholder:text-slate-500',
+          'hover:border-white/20 focus:border-brand-400 focus:bg-white/[0.06] focus:ring-2 focus:ring-brand-400/25 focus:outline-none',
+          error && 'border-rose-400/60',
           className,
         )}
         {...props}
       />
-      {error && <p className="mt-1.5 text-xs text-rose-600">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-rose-300">{error}</p>}
     </div>
   )
 }
@@ -98,9 +100,9 @@ export function Select({ label, error, className, id, children, ...props }: Sele
   const autoId = useId()
   const inputId = id ?? autoId
   return (
-    <div className="w-full">
+    <div className="w-full min-w-0">
       {label && (
-        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-slate-700">
+        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-slate-300">
           {label}
         </label>
       )}
@@ -108,16 +110,16 @@ export function Select({ label, error, className, id, children, ...props }: Sele
         id={inputId}
         aria-invalid={Boolean(error)}
         className={cn(
-          'h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm',
-          'focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none',
-          error && 'border-rose-400',
+          'h-10 w-full rounded-xl border border-white/10 bg-white/[0.045] px-3 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',
+          'hover:border-white/20 focus:border-brand-400 focus:bg-white/[0.06] focus:ring-2 focus:ring-brand-400/25 focus:outline-none',
+          error && 'border-rose-400/60',
           className,
         )}
         {...props}
       >
         {children}
       </select>
-      {error && <p className="mt-1.5 text-xs text-rose-600">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-rose-300">{error}</p>}
     </div>
   )
 }

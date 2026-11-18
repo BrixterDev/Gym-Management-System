@@ -50,14 +50,14 @@ function SubscriptionPicker({
   if (selected) {
     return (
       <div>
-        <span className="mb-1.5 block text-sm font-medium text-slate-700">Subscription</span>
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2">
+        <span className="mb-1.5 block text-sm font-medium text-slate-300">Subscription</span>
+        <div className="rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-slate-900">
+              <p className="truncate text-sm font-medium text-slate-100">
                 {selected.display_name ?? 'Unnamed member'} · {selected.plan_name}
               </p>
-              <p className="truncate text-xs text-slate-500">
+              <p className="truncate text-xs text-slate-400">
                 {selected.email} · {formatDate(selected.start_date)} → {formatDate(selected.end_date)}
               </p>
             </div>
@@ -67,7 +67,7 @@ function SubscriptionPicker({
                 <button
                   type="button"
                   onClick={() => onSelect(null)}
-                  className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200"
+                  className="flex size-6 items-center justify-center rounded text-slate-400 hover:bg-white/10"
                   aria-label="Clear subscription"
                 >
                   <X className="size-3.5" aria-hidden />
@@ -91,11 +91,11 @@ function SubscriptionPicker({
         autoComplete="off"
       />
       {deferred.trim().length > 0 && (
-        <div className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg">
+        <div className="glass-bar absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border shadow-2xl">
           {query.isLoading ? (
-            <p className="px-3 py-2 text-xs text-slate-500">Searching…</p>
+            <p className="px-3 py-2 text-xs text-slate-400">Searching…</p>
           ) : (query.data?.rows.length ?? 0) === 0 ? (
-            <p className="px-3 py-2 text-xs text-slate-500">No subscriptions found.</p>
+            <p className="px-3 py-2 text-xs text-slate-400">No subscriptions found.</p>
           ) : (
             <ul>
               {query.data?.rows.map((row) => (
@@ -106,12 +106,12 @@ function SubscriptionPicker({
                       onSelect(row)
                       setTerm('')
                     }}
-                    className="block w-full px-3 py-2 text-left hover:bg-slate-50"
+                    className="block w-full px-3 py-2 text-left hover:bg-white/[0.04]"
                   >
-                    <span className="block truncate text-sm font-medium text-slate-900">
+                    <span className="block truncate text-sm font-medium text-slate-100">
                       {row.display_name ?? 'Unnamed member'} · {row.plan_name}
                     </span>
-                    <span className="block truncate text-xs text-slate-500">
+                    <span className="block truncate text-xs text-slate-400">
                       {row.email} · ends {formatDate(row.end_date)}
                     </span>
                   </button>
@@ -281,7 +281,7 @@ export function RecordPaymentDialog({
         />
 
         {subscription && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-400">
             Plan price {formatCurrency(subscription.plan_price)} · paid{' '}
             {formatCurrency(subscription.paid_amount)} · pending{' '}
             {formatCurrency(subscription.pending_amount)}

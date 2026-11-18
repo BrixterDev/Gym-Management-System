@@ -45,24 +45,24 @@ export function ClientDashboardPage() {
           <CardHeader title="My account" description="Managed by the gym" />
           <CardBody className="space-y-3 text-sm">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Email</span>
-              <span className="truncate font-medium text-slate-900">{profile?.email ?? '—'}</span>
+              <span className="text-slate-400">Email</span>
+              <span className="truncate font-medium text-slate-100">{profile?.email ?? '—'}</span>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Member code</span>
-              <span className="font-medium text-slate-900">{clientDetail?.member_code ?? 'Not assigned'}</span>
+              <span className="text-slate-400">Member code</span>
+              <span className="font-medium text-slate-100">{clientDetail?.member_code ?? 'Not assigned'}</span>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Account status</span>
+              <span className="text-slate-400">Account status</span>
               {profile && <AccountStatusBadge status={profile.account_status} />}
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Membership</span>
+              <span className="text-slate-400">Membership</span>
               {profile && <MembershipStatusBadge status={profile.membership_status} />}
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Member since</span>
-              <span className="font-medium text-slate-900">{formatDate(profile?.created_at)}</span>
+              <span className="text-slate-400">Member since</span>
+              <span className="font-medium text-slate-100">{formatDate(profile?.created_at)}</span>
             </div>
           </CardBody>
         </Card>
@@ -70,10 +70,10 @@ export function ClientDashboardPage() {
         <Card>
           <CardHeader title="Check in at the gym" description="Scan the gym's Client QR code" />
           <CardBody>
-            <span className="flex size-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+            <span className="flex size-11 items-center justify-center rounded-xl bg-brand-500/10 text-brand-400">
               <QrCode className="size-6" aria-hidden />
             </span>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+            <p className="mt-3 text-sm leading-relaxed text-slate-300">
               Time in and time out in one tap. Your session is validated against your account and
               membership status on the server.
             </p>
@@ -95,7 +95,7 @@ export function ClientDashboardPage() {
           action={
             <Link
               to="/app/progress"
-              className="text-sm font-medium text-brand-700 hover:text-brand-800"
+              className="text-sm font-medium text-brand-300 hover:text-brand-100"
             >
               View all
             </Link>
@@ -104,8 +104,8 @@ export function ClientDashboardPage() {
         <CardBody>
           {metricsQuery.isLoading ? (
             <div className="space-y-2">
-              <div className="h-4 w-40 animate-pulse rounded bg-slate-100" />
-              <div className="h-4 w-56 animate-pulse rounded bg-slate-50" />
+              <div className="h-4 w-40 animate-pulse rounded bg-white/[0.06]" />
+              <div className="h-4 w-56 animate-pulse rounded bg-white/[0.03]" />
             </div>
           ) : latestMetric ? (
             <div className="grid grid-cols-3 gap-3">
@@ -118,23 +118,23 @@ export function ClientDashboardPage() {
                 value={latestMetric.waist_cm != null ? `${latestMetric.waist_cm} cm` : '—'}
               />
               <MetricTile label="BMI" value={latestBmi != null ? String(latestBmi) : '—'} />
-              <p className="col-span-3 flex items-center gap-2 text-xs text-slate-500">
+              <p className="col-span-3 flex items-center gap-2 text-xs text-slate-400">
                 <TrendingUp className="size-3.5" aria-hidden />
                 Last measured {formatDate(latestMetric.measured_at)}
               </p>
             </div>
           ) : (
             <div className="flex items-start gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-slate-400">
                 <TrendingUp className="size-5" aria-hidden />
               </span>
               <div>
-                <p className="text-sm leading-relaxed text-slate-600">
+                <p className="text-sm leading-relaxed text-slate-300">
                   Track your weight, height, and waist to see progress over time.
                 </p>
                 <Link
                   to="/app/progress"
-                  className="mt-2 inline-flex text-sm font-medium text-brand-700 hover:text-brand-800"
+                  className="mt-2 inline-flex text-sm font-medium text-brand-300 hover:text-brand-100"
                 >
                   Add your first measurement
                 </Link>
@@ -149,9 +149,9 @@ export function ClientDashboardPage() {
 
 function MetricTile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2">
+    <div className="rounded-lg border border-white/[0.07] bg-white/[0.04] px-3 py-2">
       <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-0.5 text-sm font-semibold text-slate-900">{value}</p>
+      <p className="mt-0.5 text-sm font-semibold text-slate-100">{value}</p>
     </div>
   )
 }

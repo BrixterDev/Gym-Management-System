@@ -48,8 +48,8 @@ export function LoginPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Welcome back</h1>
-      <p className="mt-1.5 text-sm text-slate-500">
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-100">Welcome back</h1>
+      <p className="mt-1.5 text-sm text-slate-400">
         Sign in to your account. Staff and members use the same sign-in.
       </p>
 
@@ -81,9 +81,9 @@ export function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-slate-400">
         New member?{' '}
-        <Link to="/register" className="font-medium text-brand-600 hover:text-brand-700">
+        <Link to="/register" className="font-medium text-brand-400 hover:text-brand-200">
           Create an account
         </Link>
       </p>

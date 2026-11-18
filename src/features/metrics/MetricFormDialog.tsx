@@ -246,7 +246,7 @@ export function MetricFormDialog({
         </div>
 
         {bmi != null && (
-          <p className="rounded-lg border border-brand-100 bg-brand-50/60 px-4 py-3 text-sm text-brand-900">
+          <p className="rounded-lg border border-brand-400/20 bg-brand-500/10 px-4 py-3 text-sm text-brand-200">
             Calculated BMI: <strong>{bmi}</strong>
           </p>
         )}
@@ -260,11 +260,11 @@ export function MetricFormDialog({
         />
 
         {canDelete && (
-          <div className="border-t border-slate-100 pt-4">
+          <div className="border-t border-white/[0.07] pt-4">
             {confirmDelete ? (
-              <div className="rounded-lg border border-rose-200 bg-rose-50 p-3">
-                <p className="text-sm font-medium text-rose-900">Delete this measurement?</p>
-                <p className="mt-1 text-xs text-rose-700">This cannot be undone.</p>
+              <div className="rounded-lg border border-rose-400/25 bg-rose-500/15 p-3">
+                <p className="text-sm font-medium text-rose-200">Delete this measurement?</p>
+                <p className="mt-1 text-xs text-rose-300">This cannot be undone.</p>
                 <div className="mt-3 flex gap-2">
                   <Button
                     variant="danger"
@@ -289,7 +289,7 @@ export function MetricFormDialog({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="text-rose-600 hover:bg-rose-50"
+                className="text-rose-400 hover:bg-rose-500/10"
                 onClick={() => setConfirmDelete(true)}
               >
                 <Trash2 className="size-3.5" aria-hidden />
